@@ -2,19 +2,21 @@ import React, { useState } from "react";
 import { Container, TextField, Button, Typography, Box } from "@mui/material";
 import { loginApi } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const Login: React.FC = () => {
   const { login } = useAuth(); // từ AuthContext
-  const [email, setEmail] = useState("");
+  const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-
+  const navigate = useNavigate(); 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const data = await loginApi(email, password);
-      login(data.user.name, data.token); // lưu vào context
+      const data = await loginApi(username, password);
+      login(data.userName, data.token); 
       console.log("Login success:", data);
+      navigate("/Home", { replace: true });
     } catch (err: any) {
       setError(err.message);
     }
@@ -31,9 +33,9 @@ const Login: React.FC = () => {
           required
             fullWidth
             margin="normal"
-            label="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            label="Username"
+            value={username}
+            onChange={(e) => setUserName(e.target.value)}
           />
           <TextField
           required
