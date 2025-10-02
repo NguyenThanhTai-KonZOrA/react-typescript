@@ -45,3 +45,13 @@ export type ApprovedImportResponse = {
   links: number;
   settlementsInserted: number;
 };
+
+export type LoginResponse ={
+  userName: string;
+  token: string;
+}
+
+export type LoginRequest ={
+  userName: string;
+  password: string;
+}

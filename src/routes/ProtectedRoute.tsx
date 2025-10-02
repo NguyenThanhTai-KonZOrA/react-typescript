@@ -1,13 +1,13 @@
 import React, { JSX } from "react";
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
 
 interface Props {
   children: JSX.Element;
 }
 
 const ProtectedRoute: React.FC<Props> = ({ children }) => {
-  const { token } = useAuth();
+  // Kiểm tra token từ localStorage thay vì AuthContext
+  const token = localStorage.getItem("token");
 
   if (!token) {
     return <Navigate to="/login" replace />;

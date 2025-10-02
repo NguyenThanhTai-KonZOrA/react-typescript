@@ -2,9 +2,11 @@ import {
   ApprovedImportResponse,
   ImportDetailsResponse,
   ImportSummaryResponse,
+  LoginRequest,
+  LoginResponse
 } from "../types";
 
-const API_BASE = "https://localhost:7044/api/ImportExcel";
+const API_BASE = "https://localhost:44395/api/ImportExcel";
 
 type ApiEnvelope<T> = {
   status: number;
@@ -29,6 +31,16 @@ async function requestJson<T>(input: RequestInfo, init?: RequestInit): Promise<T
     throw new Error(getErrorMessage(envelope.data, `HTTP ${envelope.status}`));
   }
   return envelope.data;
+}
+
+export async function login(loginRequest: LoginRequest): Promise<LoginResponse> {
+  return requestJson<LoginResponse>('https://localhost:44395/api/auth/login', {
+    method: "POST",
+    body: JSON.stringify(loginRequest),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 }
 
 export async function uploadExcel(file: File): Promise<ImportSummaryResponse> {
