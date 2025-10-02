@@ -1,12 +1,5 @@
 export type Filter = 'all' | 'active' | 'completed';
 
-export interface Todo {
-  id: string;
-  title: string;
-  completed: boolean;
-  createdAt: number;
-}
-
 export type CellErrorDto = { column: string; message: string };
 
 export type ImportSummaryResponse = {
@@ -46,12 +39,29 @@ export type ApprovedImportResponse = {
   settlementsInserted: number;
 };
 
-export type LoginResponse ={
+export type LoginResponse = {
   userName: string;
   token: string;
 }
 
-export type LoginRequest ={
+export type LoginRequest = {
   userName: string;
   password: string;
+}
+
+export type SettlementStatementRequest = {
+  TeamRepresentativeName: string;
+  TeamRepresentativeId: string;
+  ProgramName: string;
+  StartDate: string;
+  EndDate: string;
+}
+
+export type SettlementStatementResponse = {
+  memberId: string;
+  memberName: string;
+  joinedDate: string;
+  lastGamingDate: string;
+  eligible: boolean;
+  casinoWinLoss: number;
 }

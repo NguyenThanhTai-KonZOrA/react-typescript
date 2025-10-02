@@ -42,7 +42,6 @@ const Login: React.FC = () => {
       const response = await loginApi({ username, password });
       
       // Lưu token và user info vào localStorage
-      debugger;
       localStorage.setItem("token", response.token);
       localStorage.setItem("user", response.userName);
       

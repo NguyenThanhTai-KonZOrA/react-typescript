@@ -3,10 +3,12 @@ import {
   ImportDetailsResponse,
   ImportSummaryResponse,
   LoginRequest,
-  LoginResponse
+  LoginResponse,
+  SettlementStatementRequest,
+  SettlementStatementResponse
 } from "../types";
 
-const API_BASE = "https://localhost:44395/api/ImportExcel";
+const API_BASE = "https://localhost:7044";
 
 type ApiEnvelope<T> = {
   status: number;
@@ -34,7 +36,7 @@ async function requestJson<T>(input: RequestInfo, init?: RequestInit): Promise<T
 }
 
 export async function login(loginRequest: LoginRequest): Promise<LoginResponse> {
-  return requestJson<LoginResponse>('https://localhost:44395/api/auth/login', {
+  return requestJson<LoginResponse>(`${API_BASE}/api/auth/login`, {
     method: "POST",
     body: JSON.stringify(loginRequest),
     headers: {
@@ -46,24 +48,34 @@ export async function login(loginRequest: LoginRequest): Promise<LoginResponse> 
 export async function uploadExcel(file: File): Promise<ImportSummaryResponse> {
   const form = new FormData();
   form.append("file", file);
-  return requestJson<ImportSummaryResponse>(`${API_BASE}/upload`, {
+  return requestJson<ImportSummaryResponse>(`${API_BASE}/api/ImportExcel/upload`, {
     method: "POST",
     body: form,
   });
 }
 
 export async function getBatchDetails(batchId: string): Promise<ImportDetailsResponse> {
-  return requestJson<ImportDetailsResponse>(`${API_BASE}/${batchId}/details`);
+  return requestJson<ImportDetailsResponse>(`${API_BASE}/api/ImportExcel/${batchId}/details`);
+}
+
+export async function settlementStatementSearch(settlementStatementRequest: SettlementStatementRequest): Promise<SettlementStatementResponse[]> {
+  return requestJson<SettlementStatementResponse[]>(`${API_BASE}/api/SettlementStatement/settlement-statement-search`, {
+    method: "POST",
+    body: JSON.stringify(settlementStatementRequest),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 }
 
 export async function approveBatch(batchId: string): Promise<ApprovedImportResponse> {
-  return requestJson<ApprovedImportResponse>(`${API_BASE}/approve/${batchId}`, {
+  return requestJson<ApprovedImportResponse>(`${API_BASE}/api/ImportExcel/approve/${batchId}`, {
     method: "POST",
   });
 }
 
 export async function downloadAnnotated(batchId: string): Promise<void> {
-  const res = await fetch(`${API_BASE}/${batchId}/annotated`);
+  const res = await fetch(`${API_BASE}/api/ImportExcel/${batchId}/annotated`);
   const contentType = res.headers.get("content-type") ?? "";
 
   // Nếu middleware trả JSON (lỗi), unwrap và ném lỗi

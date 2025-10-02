@@ -3,6 +3,7 @@ import Login from "./components/Login";
 import Home from "./pages/Home";
 import ImportExcel from "./pages/ImportExcel";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import SettlementStatementPage from "./pages/SettlementStatement";
 
 const App: React.FC = () => {
   return (
@@ -14,6 +15,14 @@ const App: React.FC = () => {
         element={
           <ProtectedRoute>
             <ImportExcel />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/settlement-statement"
+        element={
+          <ProtectedRoute>
+            <SettlementStatementPage />
           </ProtectedRoute>
         }
       />

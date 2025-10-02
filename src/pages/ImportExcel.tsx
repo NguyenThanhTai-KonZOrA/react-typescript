@@ -40,9 +40,9 @@ import {
     CheckCircle,
     GetApp,
     Logout,
-    Home,
     TableChart,
 } from "@mui/icons-material";
+import EqualizerIcon from '@mui/icons-material/Equalizer';
 
 export default function ImportExcelPage() {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -51,7 +51,7 @@ export default function ImportExcelPage() {
     const [approving, setApproving] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
-    
+
     const navigate = useNavigate();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -138,7 +138,7 @@ export default function ImportExcelPage() {
     }
 
     async function onDownloadTemplate() {
-        // TODO: Implement download template if needed
+        window.open('templates/CRP Import Template.xlsx', '_blank');
     }
 
     return (
@@ -152,11 +152,11 @@ export default function ImportExcelPage() {
                     </Typography>
                     <Button
                         color="inherit"
-                        startIcon={<Home />}
-                        onClick={() => navigate("/Home")}
+                        startIcon={<EqualizerIcon  />}
+                        onClick={() => navigate("/settlement-statement")}
                         sx={{ mr: 1 }}
                     >
-                        Home
+                        Settlement Statement
                     </Button>
                     <Button
                         color="inherit"
@@ -171,7 +171,7 @@ export default function ImportExcelPage() {
             <Container maxWidth="xl" sx={{ py: { xs: 2, md: 4 } }}>
                 {/* Welcome Section */}
                 <Box sx={{ mb: 4 }}>
-                    <Typography variant="h4" component="h1" gutterBottom sx={{ 
+                    <Typography variant="h4" component="h1" gutterBottom sx={{
                         fontSize: { xs: '1.5rem', md: '2.125rem' }
                     }}>
                         🚀 Excel Import
@@ -189,7 +189,7 @@ export default function ImportExcelPage() {
                                 </Typography>
                             </Box>
                         }
-                        sx={{ 
+                        sx={{
                             bgcolor: 'primary.50',
                             borderBottom: '1px solid',
                             borderColor: 'divider'
@@ -214,11 +214,11 @@ export default function ImportExcelPage() {
                                         }}
                                     />
                                     {selectedFile && (
-                                        <Typography 
-                                            variant="caption" 
-                                            sx={{ 
-                                                mt: 1, 
-                                                display: 'block', 
+                                        <Typography
+                                            variant="caption"
+                                            sx={{
+                                                mt: 1,
+                                                display: 'block',
                                                 color: 'success.main',
                                                 fontWeight: 'medium'
                                             }}
@@ -230,9 +230,9 @@ export default function ImportExcelPage() {
                             </Grid>
 
                             <Grid item xs={12} md={6}>
-                                <Stack 
-                                    direction={{ xs: 'column', sm: 'row' }} 
-                                    spacing={2} 
+                                <Stack
+                                    direction={{ xs: 'column', sm: 'row' }}
+                                    spacing={2}
                                     sx={{ height: '100%' }}
                                 >
                                     <Button
@@ -242,7 +242,7 @@ export default function ImportExcelPage() {
                                         disabled={loading || !selectedFile}
                                         fullWidth={isMobile}
                                         size="large"
-                                        sx={{ 
+                                        sx={{
                                             minHeight: 48,
                                             boxShadow: 2,
                                             '&:hover': {
@@ -266,7 +266,7 @@ export default function ImportExcelPage() {
                                                 disabled={!details || hasErrors || approving}
                                                 fullWidth={isMobile}
                                                 size="large"
-                                                sx={{ 
+                                                sx={{
                                                     minHeight: 48,
                                                     boxShadow: 2,
                                                     '&:hover': {
@@ -280,27 +280,27 @@ export default function ImportExcelPage() {
                                     </Tooltip>
 
                                     <Button
-                                variant="outlined"
-                                startIcon={<Download />}
-                                onClick={onDownload}
-                                disabled={!details}
-                                fullWidth={isMobile}
-                                size="large"
-                            >
-                                Download Annotated
-                            </Button>
+                                        variant="outlined"
+                                        startIcon={<Download />}
+                                        onClick={onDownload}
+                                        disabled={!details}
+                                        fullWidth={isMobile}
+                                        size="large"
+                                    >
+                                        Download Annotated
+                                    </Button>
 
-                            <Button
-                                variant="outlined"
-                                color="warning"
-                                startIcon={<GetApp />}
-                                onClick={onDownloadTemplate}
-                                disabled={!details}
-                                fullWidth={isMobile}
-                                size="large"
-                            >
-                                Download Template
-                            </Button>
+                                    <Button
+                                        variant="outlined"
+                                        color="warning"
+                                        startIcon={<GetApp />}
+                                        onClick={onDownloadTemplate}
+                                        // disabled={!details}
+                                        fullWidth={isMobile}
+                                        size="large"
+                                    >
+                                        Download Template
+                                    </Button>
                                 </Stack>
                             </Grid>
                         </Grid>
@@ -326,9 +326,9 @@ export default function ImportExcelPage() {
                                     <Typography variant="h6" sx={{ fontWeight: 600 }}>
                                         📊 {details.fileName}
                                     </Typography>
-                                    <Chip 
-                                        label={`Status: ${details.status}`} 
-                                        color="info" 
+                                    <Chip
+                                        label={`Status: ${details.status}`}
+                                        color="info"
                                         size="small"
                                         variant="outlined"
                                     />
@@ -337,21 +337,21 @@ export default function ImportExcelPage() {
                             action={
                                 <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} alignItems="center">
                                     <Stack direction="row" spacing={1} flexWrap="wrap">
-                                        <Chip 
-                                            label={`Tổng: ${details.totalRows}`} 
-                                            color="default" 
-                                            size="small" 
-                                            variant="outlined" 
+                                        <Chip
+                                            label={`Tổng: ${details.totalRows}`}
+                                            color="default"
+                                            size="small"
+                                            variant="outlined"
                                         />
-                                        <Chip 
-                                            label={`Hợp lệ: ${details.validRows}`} 
-                                            color="success" 
-                                            size="small" 
+                                        <Chip
+                                            label={`Hợp lệ: ${details.validRows}`}
+                                            color="success"
+                                            size="small"
                                         />
-                                        <Chip 
-                                            label={`Lỗi: ${details.invalidRows}`} 
-                                            color="error" 
-                                            size="small" 
+                                        <Chip
+                                            label={`Lỗi: ${details.invalidRows}`}
+                                            color="error"
+                                            size="small"
                                         />
                                     </Stack>
                                     <FormControl size="small" sx={{ minWidth: 120 }}>
@@ -370,7 +370,7 @@ export default function ImportExcelPage() {
                                     </FormControl>
                                 </Stack>
                             }
-                            sx={{ 
+                            sx={{
                                 bgcolor: 'grey.50',
                                 borderBottom: '1px solid',
                                 borderColor: 'divider',
@@ -384,10 +384,10 @@ export default function ImportExcelPage() {
                         />
 
                         <CardContent sx={{ p: 0 }}>
-                            <TableContainer 
-                                component={Paper} 
+                            <TableContainer
+                                component={Paper}
                                 elevation={0}
-                                sx={{ 
+                                sx={{
                                     maxHeight: { xs: '60vh', md: '70vh' },
                                     '&::-webkit-scrollbar': {
                                         width: '8px',
@@ -408,8 +408,8 @@ export default function ImportExcelPage() {
                                 <Table stickyHeader size="small">
                                     <TableHead>
                                         <TableRow>
-                                            <TableCell 
-                                                sx={{ 
+                                            <TableCell
+                                                sx={{
                                                     fontWeight: 'bold',
                                                     bgcolor: 'primary.main',
                                                     color: 'white',
@@ -422,9 +422,9 @@ export default function ImportExcelPage() {
                                                 #
                                             </TableCell>
                                             {details.headers.map((header) => (
-                                                <TableCell 
-                                                    key={header} 
-                                                    sx={{ 
+                                                <TableCell
+                                                    key={header}
+                                                    sx={{
                                                         fontWeight: 'bold',
                                                         bgcolor: 'primary.main',
                                                         color: 'white',
@@ -440,8 +440,8 @@ export default function ImportExcelPage() {
                                                     </Tooltip>
                                                 </TableCell>
                                             ))}
-                                            <TableCell 
-                                                sx={{ 
+                                            <TableCell
+                                                sx={{
                                                     fontWeight: 'bold',
                                                     bgcolor: 'primary.main',
                                                     color: 'white',
@@ -466,8 +466,8 @@ export default function ImportExcelPage() {
                                                         '&:last-child td': { border: 0 },
                                                     }}
                                                 >
-                                                    <TableCell 
-                                                        sx={{ 
+                                                    <TableCell
+                                                        sx={{
                                                             fontWeight: 'bold',
                                                             position: 'sticky',
                                                             left: 0,
@@ -480,7 +480,7 @@ export default function ImportExcelPage() {
                                                         {row.rowNumber}
                                                     </TableCell>
                                                     {details.headers.map((header) => (
-                                                        <TableCell 
+                                                        <TableCell
                                                             key={header}
                                                             sx={{
                                                                 maxWidth: 200,
@@ -504,7 +504,7 @@ export default function ImportExcelPage() {
                                                                         variant="filled"
                                                                         size="small"
                                                                         label={`${error.column}: ${error.message}`}
-                                                                        sx={{ 
+                                                                        sx={{
                                                                             fontSize: '0.75rem',
                                                                             height: 24,
                                                                             bgcolor: 'error.main',
@@ -534,10 +534,10 @@ export default function ImportExcelPage() {
                             </TableContainer>
 
                             {/* Pagination */}
-                            <Box sx={{ 
-                                display: "flex", 
-                                justifyContent: "space-between", 
-                                alignItems: "center", 
+                            <Box sx={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
                                 p: 2,
                                 borderTop: '1px solid',
                                 borderColor: 'divider',
@@ -547,26 +547,26 @@ export default function ImportExcelPage() {
                                     Trang {page} / {totalPages} • Tổng {details.rows.length} dòng
                                 </Typography>
                                 <ButtonGroup variant="outlined" size="small">
-                                    <Button 
-                                        onClick={() => setPage(1)} 
+                                    <Button
+                                        onClick={() => setPage(1)}
                                         disabled={page === 1}
                                     >
                                         « Đầu
                                     </Button>
-                                    <Button 
-                                        onClick={() => setPage((p) => Math.max(1, p - 1))} 
+                                    <Button
+                                        onClick={() => setPage((p) => Math.max(1, p - 1))}
                                         disabled={page === 1}
                                     >
                                         ‹ Trước
                                     </Button>
-                                    <Button 
-                                        onClick={() => setPage((p) => Math.min(totalPages, p + 1))} 
+                                    <Button
+                                        onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                                         disabled={page === totalPages}
                                     >
                                         Sau ›
                                     </Button>
-                                    <Button 
-                                        onClick={() => setPage(totalPages)} 
+                                    <Button
+                                        onClick={() => setPage(totalPages)}
                                         disabled={page === totalPages}
                                     >
                                         Cuối »
