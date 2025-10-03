@@ -2,12 +2,17 @@ import React, { useState } from "react";
 import {
     Box,
     Button,
+    ButtonGroup,
     Card,
     CardContent,
     CardHeader,
     Chip,
     Container,
+    FormControl,
     Grid,
+    InputLabel,
+    MenuItem,
+    Select,
     Table,
     TableBody,
     TableCell,
@@ -43,7 +48,7 @@ export default function SettlementStatementPage() {
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
     // Pagination state
-    const [page, setPage] = useState(0);
+    const [page, setPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
 
     const theme = useTheme();
@@ -66,22 +71,13 @@ export default function SettlementStatementPage() {
             };
             const res = await settlementStatementSearch(req);
             setResults(res);
-            setPage(0); // Reset về trang đầu khi tìm kiếm mới
+            setPage(1); // Reset về trang đầu khi tìm kiếm mới
         } catch (e: any) {
             setError(e.message || "Lỗi tìm kiếm");
             setResults([]);
         } finally {
             setLoading(false);
         }
-    };
-
-    const handleChangePage = (_: unknown, newPage: number) => {
-        setPage(newPage);
-    };
-
-    const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
     };
 
     // Handle logout
@@ -122,7 +118,8 @@ export default function SettlementStatementPage() {
     const awardSettlement = getAwardSettlement(totalWinLoss);
 
     // Lấy dữ liệu trang hiện tại
-    const pagedResults = results.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+    const totalPages = Math.max(1, Math.ceil(results.length / rowsPerPage));
+    const pagedResults = results.slice((page - 1) * rowsPerPage, page * rowsPerPage);
 
     return (
         <Layout>
@@ -291,12 +288,39 @@ export default function SettlementStatementPage() {
                                 />
                             </Stack>
                         }
+                        action={
+                            <Stack direction="row" spacing={1} alignItems="center">
+                                <FormControl size="small" sx={{ minWidth: 120 }}>
+                                    <InputLabel>Số dòng/trang</InputLabel>
+                                    <Select
+                                        label="Số dòng/trang"
+                                        value={rowsPerPage}
+                                        onChange={(e) => {
+                                            setRowsPerPage(Number(e.target.value));
+                                            setPage(1);
+                                        }}
+                                    >
+                                        {[5, 10, 20, 50].map((size) => (
+                                            <MenuItem key={size} value={size}>
+                                                {size}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Stack>
+                        }
                         sx={{
                             bgcolor: 'grey.50',
                             borderBottom: '1px solid',
                             borderColor: 'divider',
                             borderTopLeftRadius: 12,
                             borderTopRightRadius: 12,
+                            flexDirection: { xs: 'column', lg: 'row' },
+                            alignItems: { lg: 'center' },
+                            '& .MuiCardHeader-action': {
+                                margin: { xs: '8px 0 0 0', lg: 0 },
+                                alignSelf: { xs: 'stretch', lg: 'auto' }
+                            }
                         }}
                     />
                     <CardContent sx={{ p: 0 }}>
@@ -431,7 +455,7 @@ export default function SettlementStatementPage() {
                                                 borderRight: '1px solid',
                                                 borderColor: 'divider',
                                             }}>
-                                                {page * rowsPerPage + idx + 1}
+                                                {(page - 1) * rowsPerPage + idx + 1}
                                             </TableCell>
                                             <TableCell align="center">{row.memberId}</TableCell>
                                             <TableCell align="center">{row.memberName}</TableCell>
@@ -451,6 +475,7 @@ export default function SettlementStatementPage() {
                                 </TableBody>
                             </Table>
                         </TableContainer>
+                        {/* Pagination */}
                         <Box sx={{
                             display: "flex",
                             justifyContent: "space-between",
@@ -461,21 +486,34 @@ export default function SettlementStatementPage() {
                             bgcolor: 'grey.50'
                         }}>
                             <Typography variant="body2" color="text.secondary">
-                                Trang {results.length === 0 ? 0 : page + 1} / {Math.max(1, Math.ceil(results.length / rowsPerPage))} • Tổng {results.length} dòng
+                                Trang {results.length === 0 ? 0 : page} / {totalPages} • Tổng {results.length} dòng
                             </Typography>
-                            <TablePagination
-                                component="div"
-                                count={results.length}
-                                page={page}
-                                onPageChange={handleChangePage}
-                                rowsPerPage={rowsPerPage}
-                                onRowsPerPageChange={handleChangeRowsPerPage}
-                                rowsPerPageOptions={[5, 10, 20, 50]}
-                                labelRowsPerPage="Số dòng/trang"
-                                sx={{
-                                    ".MuiTablePagination-toolbar": { justifyContent: "flex-end" }
-                                }}
-                            />
+                            <ButtonGroup variant="outlined" size="small">
+                                <Button
+                                    onClick={() => setPage(1)}
+                                    disabled={page === 1}
+                                >
+                                    « Đầu
+                                </Button>
+                                <Button
+                                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                                    disabled={page === 1}
+                                >
+                                    ‹ Trước
+                                </Button>
+                                <Button
+                                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                                    disabled={page >= totalPages}
+                                >
+                                    Sau ›
+                                </Button>
+                                <Button
+                                    onClick={() => setPage(totalPages)}
+                                    disabled={page >= totalPages}
+                                >
+                                    Cuối »
+                                </Button>
+                            </ButtonGroup>
                         </Box>
                         
                         {/* Summary Section */}
