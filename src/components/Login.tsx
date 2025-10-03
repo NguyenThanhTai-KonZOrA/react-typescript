@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { login as loginApi } from "../services/api";
+import { useAuth } from "../context/AuthContext";
 
 const Login: React.FC = () => {
   const [username, setUserName] = useState("");
@@ -17,14 +18,14 @@ const Login: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { login, token } = useAuth(); // 👈 Use AuthContext
 
   // Kiểm tra nếu đã đăng nhập thì redirect
   useEffect(() => {
-    const token = localStorage.getItem("token");
     if (token) {
       navigate("/import-excel", { replace: true });
     }
-  }, [navigate]);
+  }, [token, navigate]); // 👈 Depend on token from context
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,11 +40,10 @@ const Login: React.FC = () => {
     }
 
     try {
-      const response = await loginApi({ username, password });
+      const response = await loginApi({ userName: username, password });
       
-      // Lưu token và user info vào localStorage
-      localStorage.setItem("token", response.token);
-      localStorage.setItem("user", response.userName);
+      // 👇 Use AuthContext login instead of direct localStorage
+      login(response.userName, response.token);
       
       console.log("Login success:", response);
       navigate("/import-excel", { replace: true });

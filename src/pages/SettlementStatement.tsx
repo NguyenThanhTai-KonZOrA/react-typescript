@@ -80,13 +80,6 @@ export default function SettlementStatementPage() {
         }
     };
 
-    // Handle logout
-    const handleLogout = () => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        navigate("/login");
-    };
-
     function formatDate(dateStr?: string) {
         if (!dateStr) return "";
         const d = new Date(dateStr);
@@ -191,7 +184,7 @@ export default function SettlementStatementPage() {
                                 gap: 3,
                                 alignItems: { md: 'center' }
                             }}>
-                                <Box sx={{ flex: { xs: 1, md: '0 0 300px' } }}>
+                                <Box sx={{ flex: { xs: 1, md: 'auto' } }}>
                                     <TextField
                                         label="Ngày bắt đầu"
                                         name="dateStart"
@@ -204,7 +197,7 @@ export default function SettlementStatementPage() {
                                         variant="outlined"
                                     />
                                 </Box>
-                                <Box sx={{ flex: { xs: 1, md: '0 0 300px' } }}>
+                                <Box sx={{ flex: { xs: 1, md: 'auto' } }}>
                                     <TextField
                                         label="Ngày kết thúc"
                                         name="dateEnd"

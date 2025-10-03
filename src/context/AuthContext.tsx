@@ -21,6 +21,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (savedUser) setUser(savedUser);
   }, []);
 
+  // 👇 Global logout detection
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      // Khi token bị remove từ tab khác
+      if (e.key === 'token' && e.newValue === null) {
+        console.log('🚪 Token removed from another tab, clearing local state...');
+        setUser(null);
+        setToken(null);
+      }
+      
+      // Khi có logout event từ tab khác
+      if (e.key === 'logout-event') {
+        console.log('🚪 Logout event received from another tab');
+        setUser(null);
+        setToken(null);
+        // Clean up the event (no need to remove here, it will auto-expire)
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
+
   const login = (user: string, token: string) => {
     setUser(user);
     setToken(token);
@@ -33,6 +59,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setToken(null);
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    
+    // 👇 Trigger global logout event cho các tabs khác
+    localStorage.setItem('logout-event', Date.now().toString());
   };
 
   return (

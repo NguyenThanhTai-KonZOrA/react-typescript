@@ -9,15 +9,17 @@ import {
 import { ImportExport, Logout, TableChart } from "@mui/icons-material";
 import EqualizerIcon from '@mui/icons-material/Equalizer';
 import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 export default function Header() {
     const navigate = useNavigate();
     const location = useLocation();
+    const { logout } = useAuth(); // 👈 Use AuthContext logout
 
-    // Handle logout
+    // Handle logout - now triggers global logout
     const handleLogout = () => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
+        console.log('🚪 Triggering global logout...');
+        logout(); // This will trigger logout for all tabs
         navigate("/login");
     };
 
