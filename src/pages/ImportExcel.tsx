@@ -43,6 +43,7 @@ import {
     TableChart,
 } from "@mui/icons-material";
 import EqualizerIcon from '@mui/icons-material/Equalizer';
+import { Layout } from "../components/layout";
 
 export default function ImportExcelPage() {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -142,32 +143,7 @@ export default function ImportExcelPage() {
     }
 
     return (
-        <Box sx={{ minHeight: '100vh', bgcolor: 'grey.50' }}>
-            {/* Top Navigation Bar */}
-            <AppBar position="static" elevation={2}>
-                <Toolbar>
-                    <TableChart sx={{ mr: 2 }} />
-                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                        Excel Import System
-                    </Typography>
-                    <Button
-                        color="inherit"
-                        startIcon={<EqualizerIcon  />}
-                        onClick={() => navigate("/settlement-statement")}
-                        sx={{ mr: 1 }}
-                    >
-                        Settlement Statement
-                    </Button>
-                    <Button
-                        color="inherit"
-                        startIcon={<Logout />}
-                        onClick={handleLogout}
-                    >
-                        Logout
-                    </Button>
-                </Toolbar>
-            </AppBar>
-
+        <Layout>
             <Container maxWidth="xl" sx={{ py: { xs: 2, md: 4 } }}>
                 {/* Welcome Section */}
                 <Box sx={{ mb: 4 }}>
@@ -583,6 +559,6 @@ export default function ImportExcelPage() {
                     </Card>
                 )}
             </Container>
-        </Box>
+        </Layout>
     );
 }

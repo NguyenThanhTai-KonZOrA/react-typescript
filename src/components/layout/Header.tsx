@@ -1,0 +1,79 @@
+import React from "react";
+import {
+    AppBar,
+    Toolbar,
+    Typography,
+    Button,
+    Box
+} from "@mui/material";
+import { ImportExport, Logout, TableChart } from "@mui/icons-material";
+import EqualizerIcon from '@mui/icons-material/Equalizer';
+import { useNavigate, useLocation } from "react-router-dom";
+
+export default function Header() {
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    // Handle logout
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        navigate("/login");
+    };
+
+    // Determine page title based on current route
+    const getPageTitle = () => {
+        switch (location.pathname) {
+            case "/import-excel":
+                return "Excel Import System";
+            case "/settlement-statement":
+                return "Settlement Statement";
+            default:
+                return "Excel Import System";
+        }
+    };
+
+    return (
+        <AppBar position="sticky" elevation={2} sx={{ top: 0, zIndex: 1100 }}>
+            <Toolbar>
+                <TableChart sx={{ mr: 2 }} />
+                <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                    {getPageTitle()}
+                </Typography>
+                
+                {/* Navigation Buttons */}
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                    {location.pathname !== "/import-excel" && (
+                        <Button
+                            color="inherit"
+                            startIcon={<ImportExport />}
+                            onClick={() => navigate("/import-excel")}
+                            sx={{ mr: 1 }}
+                        >
+                            Import Excel
+                        </Button>
+                    )}
+                    
+                    {location.pathname !== "/settlement-statement" && (
+                        <Button
+                            color="inherit"
+                            startIcon={<EqualizerIcon />}
+                            onClick={() => navigate("/settlement-statement")}
+                            sx={{ mr: 1 }}
+                        >
+                            Settlement Statement
+                        </Button>
+                    )}
+                    
+                    <Button
+                        color="inherit"
+                        startIcon={<Logout />}
+                        onClick={handleLogout}
+                    >
+                        Logout
+                    </Button>
+                </Box>
+            </Toolbar>
+        </AppBar>
+    );
+}
