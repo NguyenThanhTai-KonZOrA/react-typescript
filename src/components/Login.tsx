@@ -8,7 +8,7 @@ import {
   Alert,
   CircularProgress 
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { login as loginApi } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 
@@ -18,14 +18,17 @@ const Login: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { login, token } = useAuth(); // 👈 Use AuthContext
 
   // Kiểm tra nếu đã đăng nhập thì redirect
   useEffect(() => {
     if (token) {
-      navigate("/import-excel", { replace: true });
+      // 👇 Redirect to intended URL or default to import-excel
+      const from = (location.state as any)?.from?.pathname || "/import-excel";
+      navigate(from, { replace: true });
     }
-  }, [token, navigate]); // 👈 Depend on token from context
+  }, [token, navigate, location.state]); // 👈 Include location.state
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,7 +49,10 @@ const Login: React.FC = () => {
       login(response.userName, response.token);
       
       console.log("Login success:", response);
-      navigate("/import-excel", { replace: true });
+      
+      // 👇 Redirect to intended URL or default
+      const from = (location.state as any)?.from?.pathname || "/import-excel";
+      navigate(from, { replace: true });
     } catch (err: any) {
       setError(err.message || "Đã xảy ra lỗi khi đăng nhập");
       console.error("Login error:", err);

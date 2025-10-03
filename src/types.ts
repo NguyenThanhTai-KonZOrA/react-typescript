@@ -65,3 +65,38 @@ export type SettlementStatementResponse = {
   eligible: boolean;
   casinoWinLoss: number;
 }
+
+export type TeamRepresentativesRequest = {
+  TeamRepresentativeName: string;
+  TeamRepresentativeId: string;
+  ProgramName: string;
+  Month: string;
+}
+
+export type TeamRepresentativesResponse = {
+  segment: string;
+  teamRepresentativeName: string;
+  teamRepresentativeId: string;
+  settlementDoc: string;
+  programName: string;
+  month: string;
+  casinoWinLoss: number;
+  awardTotal: number;
+  status: string;
+  isPayment: boolean;
+}
+
+export type PaymentTeamRepresentativesRequest = {
+  TeamRepresentativeName: string;
+  TeamRepresentativeId: string;
+  Month: string;
+}
+
+export type PaymentTeamRepresentativesResponse = {
+  isPayment: boolean;
+}
+
+export type GenerateCrpReportRequest = {
+  TeamRepresentativeId: string;
+  Month: string;
+}

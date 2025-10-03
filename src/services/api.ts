@@ -1,11 +1,16 @@
 import {
   ApprovedImportResponse,
+  GenerateCrpReportRequest,
   ImportDetailsResponse,
   ImportSummaryResponse,
   LoginRequest,
   LoginResponse,
+  PaymentTeamRepresentativesRequest,
+  PaymentTeamRepresentativesResponse,
   SettlementStatementRequest,
-  SettlementStatementResponse
+  SettlementStatementResponse,
+  TeamRepresentativesRequest,
+  TeamRepresentativesResponse
 } from "../types";
 
 const API_BASE = "https://localhost:7044";
@@ -27,7 +32,6 @@ function getErrorMessage(data: unknown, fallback: string) {
 
 async function requestJson<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
   const res = await fetch(input, init);
-  // Luôn đọc JSON (kể cả khi res.ok = false) vì middleware luôn trả JSON wrapper
   const envelope = (await res.json()) as ApiEnvelope<T>;
   if (!envelope.success) {
     throw new Error(getErrorMessage(envelope.data, `HTTP ${envelope.status}`));
@@ -68,6 +72,26 @@ export async function settlementStatementSearch(settlementStatementRequest: Sett
   });
 }
 
+export async function getTeamRepresentatives(settlementStatementRequest: TeamRepresentativesRequest): Promise<TeamRepresentativesResponse[]> {
+  return requestJson<TeamRepresentativesResponse[]>(`${API_BASE}/api/SettlementStatement/list-teamRepresentatives`, {
+    method: "POST",
+    body: JSON.stringify(settlementStatementRequest),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+}
+
+export async function paymentTeamRepresentatives(settlementStatementRequest: PaymentTeamRepresentativesRequest): Promise<PaymentTeamRepresentativesResponse> {
+  return requestJson<PaymentTeamRepresentativesResponse>(`${API_BASE}/api/SettlementStatement/payment`, {
+    method: "POST",
+    body: JSON.stringify(settlementStatementRequest),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+}
+
 export async function approveBatch(batchId: string): Promise<ApprovedImportResponse> {
   return requestJson<ApprovedImportResponse>(`${API_BASE}/api/ImportExcel/approve/${batchId}`, {
     method: "POST",
@@ -78,23 +102,54 @@ export async function downloadAnnotated(batchId: string): Promise<void> {
   const res = await fetch(`${API_BASE}/api/ImportExcel/${batchId}/annotated`);
   const contentType = res.headers.get("content-type") ?? "";
 
-  // Nếu middleware trả JSON (lỗi), unwrap và ném lỗi
   if (contentType.toLowerCase().startsWith("application/json")) {
     const envelope = (await res.json()) as ApiEnvelope<unknown>;
     if (!envelope.success) {
       throw new Error(getErrorMessage(envelope.data, `HTTP ${envelope.status}`));
     }
-    // Trường hợp hiếm: server trả JSON thành công cho endpoint download (không mong đợi)
     throw new Error("Unexpected JSON response when downloading file.");
   }
 
-  // Bình thường: nhận file .xlsx
   const blob = await res.blob();
 
-  // Lấy filename từ header nếu có
   const cd = res.headers.get("content-disposition") || "";
   const match = /filename\*?=(?:UTF-8''|")?([^\";]+)/i.exec(cd);
   const serverFileName = match ? decodeURIComponent(match[1].replace(/"/g, "")) : "annotated.xlsx";
+
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = serverFileName;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  window.URL.revokeObjectURL(url);
+}
+
+export async function downloadCrpReport(request: GenerateCrpReportRequest): Promise<void> {
+  const res = await fetch(`${API_BASE}/api/ImportExcel/crp-settlement`, {
+    method: "POST",
+    body: JSON.stringify(request),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  const contentType = res.headers.get("content-type") ?? "";
+
+  if (contentType.toLowerCase().startsWith("application/json")) {
+    const envelope = (await res.json()) as ApiEnvelope<unknown>;
+    if (!envelope.success) {
+      throw new Error(getErrorMessage(envelope.data, `HTTP ${envelope.status}`));
+    }
+    throw new Error("Unexpected JSON response when downloading file.");
+  }
+
+  const blob = await res.blob();
+
+  const cd = res.headers.get("content-disposition") || "";
+  const match = /filename\*?=(?:UTF-8''|")?([^\";]+)/i.exec(cd);
+  const serverFileName = match ? decodeURIComponent(match[1].replace(/"/g, "")) : "crpReport.xlsx";
 
   const url = window.URL.createObjectURL(blob);
   const a = document.createElement("a");

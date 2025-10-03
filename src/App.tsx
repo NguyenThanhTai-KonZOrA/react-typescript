@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import ImportExcel from "./pages/ImportExcel";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import SettlementStatementPage from "./pages/SettlementStatement";
+import TeamRepresentativesPage from "./pages/TeamRepresentatives";
 
 const App: React.FC = () => {
   return (
@@ -23,6 +24,14 @@ const App: React.FC = () => {
         element={
           <ProtectedRoute>
             <SettlementStatementPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/team-representatives"
+        element={
+          <ProtectedRoute>
+            <TeamRepresentativesPage />
           </ProtectedRoute>
         }
       />

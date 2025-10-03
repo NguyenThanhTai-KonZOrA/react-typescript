@@ -59,7 +59,7 @@ export default function ImportExcelPage() {
 
     // Pagination state
     const [page, setPage] = useState(1);
-    const [pageSize, setPageSize] = useState(20);
+    const [pageSize, setPageSize] = useState(10);
 
     const hasErrors = useMemo(() => (details ? details.invalidRows > 0 : true), [details]);
 
@@ -189,7 +189,7 @@ export default function ImportExcelPage() {
                                             }
                                         }}
                                     />
-                                    {selectedFile && (
+                                    {/* {selectedFile && (
                                         <Typography
                                             variant="caption"
                                             sx={{
@@ -201,7 +201,7 @@ export default function ImportExcelPage() {
                                         >
                                             📎 Đã chọn: {selectedFile.name}
                                         </Typography>
-                                    )}
+                                    )} */}
                                 </Box>
                             </Grid>
 
@@ -429,11 +429,11 @@ export default function ImportExcelPage() {
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {pageRows.map((row) => {
+                                        {pageRows.map((row, index) => {
                                             const rowHasError = !row.isValid && (row.errors?.length ?? 0) > 0;
                                             return (
                                                 <TableRow
-                                                    key={row.rowNumber}
+                                                    key={`${row.rowNumber}-${index}`}
                                                     sx={{
                                                         bgcolor: rowHasError ? 'warning.light' : 'inherit',
                                                         '&:hover': {

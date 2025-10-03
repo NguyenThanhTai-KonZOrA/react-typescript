@@ -1,5 +1,5 @@
 import React, { JSX } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 interface Props {
@@ -8,10 +8,11 @@ interface Props {
 
 const ProtectedRoute: React.FC<Props> = ({ children }) => {
   const { token } = useAuth();
+  const location = useLocation();
 
-  // 👇 Simply check token from AuthContext (no need for additional listeners)
+  // 👇 Pass current location to login so it can redirect back
   if (!token) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   return children;

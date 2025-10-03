@@ -6,7 +6,7 @@ import {
     Button,
     Box
 } from "@mui/material";
-import { ImportExport, Logout, TableChart } from "@mui/icons-material";
+import { ImportExport, Logout, TableChart, Groups } from "@mui/icons-material";
 import EqualizerIcon from '@mui/icons-material/Equalizer';
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
@@ -30,6 +30,8 @@ export default function Header() {
                 return "Excel Import System";
             case "/settlement-statement":
                 return "Settlement Statement";
+            case "/team-representatives":
+                return "CRP Management";
             default:
                 return "Excel Import System";
         }
@@ -64,6 +66,17 @@ export default function Header() {
                             sx={{ mr: 1 }}
                         >
                             Settlement Statement
+                        </Button>
+                    )}
+                    
+                    {location.pathname !== "/team-representatives" && (
+                        <Button
+                            color="inherit"
+                            startIcon={<Groups />}
+                            onClick={() => navigate("/team-representatives")}
+                            sx={{ mr: 1 }}
+                        >
+                            Team Representatives
                         </Button>
                     )}
                     
