@@ -13,7 +13,7 @@ import {
   TeamRepresentativesResponse
 } from "../types";
 
-const API_BASE = "https://localhost:7044";
+const API_BASE = "http://10.21.10.1:8086";
 
 type ApiEnvelope<T> = {
   status: number;
