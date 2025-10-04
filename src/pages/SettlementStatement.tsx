@@ -95,12 +95,11 @@ export default function SettlementStatementPage() {
         }, 0);
     }
 
-    // Tính chi trả thưởng theo công thức
     function getAwardSettlement(total: number) {
         let percent = 0.05;
         if (total > 90000) percent = 0.12;
         else if (total > 30000) percent = 0.10;
-        return Math.round(total * percent * 10) / 10; // Làm tròn 1 số thập phân
+        return Math.round(total * percent * 10) / 10;
     }
 
     const totalWinLoss = getTotalWinLoss();

@@ -77,6 +77,7 @@ export type TeamRepresentativesResponse = {
   segment: string;
   teamRepresentativeName: string;
   teamRepresentativeId: string;
+  paymentTeamRepresentativesId: string;
   settlementDoc: string;
   programName: string;
   month: string;
@@ -99,4 +100,13 @@ export type PaymentTeamRepresentativesResponse = {
 export type GenerateCrpReportRequest = {
   TeamRepresentativeId: string;
   Month: string;
+}
+
+export type UnPaidTeamRepresentativesRequest = {
+  PaymentTeamRepresentativesId: string;
+}
+
+export type UnPaidTeamRepresentativesResponse = {
+  isUnPaid: boolean;
+  paymentTeamRepresentativesId: string;
 }

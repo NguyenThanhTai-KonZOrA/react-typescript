@@ -29,9 +29,10 @@ import {
     Tooltip,
 } from "@mui/material";
 import { Search, Groups, CheckCircle, FileDownload } from "@mui/icons-material";
+import RestoreIcon from '@mui/icons-material/Restore';
 import PaymentIcon from '@mui/icons-material/Payment';
-import { getTeamRepresentatives, paymentTeamRepresentatives, downloadCrpReport } from "../services/api";
-import { TeamRepresentativesRequest, TeamRepresentativesResponse, PaymentTeamRepresentativesRequest, GenerateCrpReportRequest } from "../types";
+import { getTeamRepresentatives, paymentTeamRepresentatives, downloadCrpReport, unPaidTeamRepresentatives } from "../services/api";
+import { TeamRepresentativesRequest, TeamRepresentativesResponse, PaymentTeamRepresentativesRequest, GenerateCrpReportRequest, UnPaidTeamRepresentativesResponse, UnPaidTeamRepresentativesRequest } from "../types";
 import { Layout } from "../components/layout";
 
 export default function TeamRepresentativesPage() {
@@ -109,6 +110,32 @@ export default function TeamRepresentativesPage() {
         }
     };
 
+    const handleUnPaid = async (item: UnPaidTeamRepresentativesResponse) => {
+        const unPaidKey = `${item.paymentTeamRepresentativesId}-${item.isUnPaid}`;
+        setPaymentLoading(unPaidKey);
+        setError(null);
+        setSuccess(null);
+
+        try {
+            const req: UnPaidTeamRepresentativesRequest = {
+                PaymentTeamRepresentativesId: item.paymentTeamRepresentativesId
+            };
+            const res = await unPaidTeamRepresentatives(req);
+
+            if (res && res.isUnPaid) {
+                handleSearch();
+                setSuccess(`Unpaid successful!`);
+                // Refresh data after successful payment
+            } else {
+                setError("Unpaid status check failed");
+            }
+        } catch (e: any) {
+            setError(e.message || "Error occurred during payment");
+        } finally {
+            setPaymentLoading("");
+        }
+    };
+
     const handleDownload = async (item: TeamRepresentativesResponse) => {
         const downloadKey = `${item.teamRepresentativeId}-${item.month}`;
         setDownloadLoading(downloadKey);
@@ -120,7 +147,7 @@ export default function TeamRepresentativesPage() {
                 TeamRepresentativeId: item.teamRepresentativeId,
                 Month: item.month
             };
-            
+
             await downloadCrpReport(req);
             setSuccess(`Report downloaded successfully for ${item.teamRepresentativeName}`);
         } catch (e: any) {
@@ -508,8 +535,10 @@ export default function TeamRepresentativesPage() {
                                     )}
                                     {pagedResults.map((row, index) => {
                                         const paymentKey = `${row.teamRepresentativeId}-${row.month}`;
+                                        const unPaidKey = `${row.paymentTeamRepresentativesId}-${row.month}`;
                                         const isPaymentLoading = paymentLoading === paymentKey;
                                         const isDownloadLoading = downloadLoading === `${row.teamRepresentativeId}-${row.month}`;
+                                        const isUnPaidLoading = paymentLoading === unPaidKey
 
                                         return (
                                             <TableRow
@@ -597,6 +626,26 @@ export default function TeamRepresentativesPage() {
                                                             </IconButton>
                                                         </span>
 
+                                                    </Tooltip>
+                                                    <Tooltip title="UnPaid">
+                                                        <span>
+                                                            <IconButton
+                                                                color="primary"
+                                                                onClick={() => handleUnPaid(row)}
+                                                                disabled={!row.isPayment || isUnPaidLoading || loading}
+                                                                sx={{
+                                                                    '&:hover': {
+                                                                        bgcolor: 'primary.50'
+                                                                    }
+                                                                }}
+                                                            >
+                                                                {isUnPaidLoading ? (
+                                                                    <CircularProgress size={20} />
+                                                                ) : (
+                                                                    <RestoreIcon />
+                                                                )}
+                                                            </IconButton>
+                                                        </span>
                                                     </Tooltip>
                                                     <Tooltip title="Download">
                                                         <span>

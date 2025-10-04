@@ -10,7 +10,9 @@ import {
   SettlementStatementRequest,
   SettlementStatementResponse,
   TeamRepresentativesRequest,
-  TeamRepresentativesResponse
+  TeamRepresentativesResponse,
+  UnPaidTeamRepresentativesRequest,
+  UnPaidTeamRepresentativesResponse
 } from "../types";
 
 const API_BASE = (window as any)._env_?.API_BASE;
@@ -87,6 +89,16 @@ export async function getTeamRepresentatives(settlementStatementRequest: TeamRep
 
 export async function paymentTeamRepresentatives(settlementStatementRequest: PaymentTeamRepresentativesRequest): Promise<PaymentTeamRepresentativesResponse> {
   return requestJson<PaymentTeamRepresentativesResponse>(`${API_BASE}/api/SettlementStatement/payment`, {
+    method: "POST",
+    body: JSON.stringify(settlementStatementRequest),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+}
+
+export async function unPaidTeamRepresentatives(settlementStatementRequest: UnPaidTeamRepresentativesRequest): Promise<UnPaidTeamRepresentativesResponse> {
+  return requestJson<UnPaidTeamRepresentativesResponse>(`${API_BASE}/api/SettlementStatement/unpaid`, {
     method: "POST",
     body: JSON.stringify(settlementStatementRequest),
     headers: {
