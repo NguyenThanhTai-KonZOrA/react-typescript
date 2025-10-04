@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 
 import {
     Alert,
-    AppBar,
     Box,
     Button,
     ButtonGroup,
@@ -26,7 +25,6 @@ import {
     TableHead,
     TableRow,
     TextField,
-    Toolbar,
     Tooltip,
     Typography,
     Paper,
@@ -38,11 +36,8 @@ import {
     CloudUpload,
     Download,
     CheckCircle,
-    GetApp,
-    Logout,
-    TableChart,
+    GetApp
 } from "@mui/icons-material";
-import EqualizerIcon from '@mui/icons-material/Equalizer';
 import { Layout } from "../components/layout";
 
 export default function ImportExcelPage() {
@@ -94,7 +89,7 @@ export default function ImportExcelPage() {
         setError(null);
         setSuccess(null);
         if (!selectedFile) {
-            setError("Vui lòng chọn file (.xlsx).");
+            setError("Please select a file (.xlsx).");
             return;
         }
         setLoading(true);
@@ -102,9 +97,9 @@ export default function ImportExcelPage() {
             const summary = await uploadExcel(selectedFile);
             const full = await getBatchDetails(summary.batchId);
             setDetails(full);
-            setSuccess("Upload thành công.");
+            setSuccess("Upload successful.");
         } catch (e: any) {
-            setError(e.message || "Upload thất bại.");
+            setError(e.message || "Upload failed.");
         } finally {
             setLoading(false);
         }
@@ -117,11 +112,11 @@ export default function ImportExcelPage() {
         setApproving(true);
         try {
             const res = await approveBatch(details.batchId);
-            setSuccess(`Approved thành công. Settlements: ${res.settlementsInserted}`);
+            setSuccess(`Approved successfully. Settlements: ${res.settlementsInserted}`);
             const refreshed = await getBatchDetails(details.batchId);
             setDetails(refreshed);
         } catch (e: any) {
-            setError(e.message || "Approve thất bại.");
+            setError(e.message || "Approve failed.");
         } finally {
             setApproving(false);
         }
@@ -131,15 +126,15 @@ export default function ImportExcelPage() {
         setError(null);
         setSuccess(null);
         try {
-            if (!details) throw new Error("Không có batch.");
+            if (!details) throw new Error("No batch available.");
             await downloadAnnotated(details.batchId);
         } catch (e: any) {
-            setError(e.message || "Download thất bại.");
+            setError(e.message || "Download failed.");
         }
     }
 
     async function onDownloadTemplate() {
-        window.open('templates/CRP Import Template.xlsx', '_blank');
+        window.open('/templates/CRP Import Template.xlsx', '_blank');
     }
 
     return (
@@ -175,33 +170,70 @@ export default function ImportExcelPage() {
                         <Grid container spacing={3} alignItems="center">
                             <Grid item xs={12} md={6}>
                                 <Box>
-                                    <TextField
-                                        fullWidth
+                                    {/* Ẩn input file mặc định */}
+                                    <input
+                                        accept=".xlsx,.xls"
+                                        id="excel-file-input"
                                         type="file"
-                                        inputProps={{ accept: ".xlsx,.xls" }}
+                                        style={{ display: "none" }}
                                         onChange={handleFileChange}
-                                        sx={{
-                                            '& .MuiOutlinedInput-root': {
-                                                bgcolor: 'background.paper',
-                                                '&:hover': {
-                                                    bgcolor: 'action.hover',
-                                                }
-                                            }
-                                        }}
                                     />
-                                    {/* {selectedFile && (
-                                        <Typography
-                                            variant="caption"
+                                    <label htmlFor="excel-file-input" style={{ width: "100%" }}>
+                                        <Button
+                                            variant={selectedFile ? "contained" : "outlined"}
+                                            component="span"
+                                            startIcon={<CloudUpload />}
                                             sx={{
-                                                mt: 1,
-                                                display: 'block',
-                                                color: 'success.main',
-                                                fontWeight: 'medium'
+                                                fontWeight: 600,
+                                                minHeight: 48,
+                                                px: 3,
+                                                boxShadow: 2,
+                                                bgcolor: selectedFile ? 'success.main' : 'background.paper',
+                                                color: selectedFile ? 'white' : 'inherit',
+                                                '&:hover': {
+                                                    boxShadow: 4,
+                                                    bgcolor: selectedFile ? 'success.dark' : 'action.hover',
+                                                },
+                                                width: "100%",
+                                                justifyContent: "flex-start",
+                                                textTransform: "none"
                                             }}
+                                            fullWidth={isMobile}
+                                            size="large"
                                         >
-                                            📎 Đã chọn: {selectedFile.name}
-                                        </Typography>
-                                    )} */}
+                                            {selectedFile
+                                                ? (
+                                                    <Box sx={{ display: "flex", alignItems: "center", width: "100%", overflow: "hidden" }}>
+                                                        <Typography
+                                                            variant="body1"
+                                                            sx={{
+                                                                fontWeight: 500,
+                                                                whiteSpace: "nowrap",
+                                                                overflow: "hidden",
+                                                                textOverflow: "ellipsis",
+                                                                flex: 1
+                                                            }}
+                                                            title={selectedFile.name}
+                                                        >
+                                                            {selectedFile.name}
+                                                        </Typography>
+                                                        <Typography
+                                                            variant="body2"
+                                                            sx={{
+                                                                ml: 2,
+                                                                color: "white",
+                                                                fontWeight: 400,
+                                                                fontSize: "0.85rem"
+                                                            }}
+                                                        >
+                                                            (Change file)
+                                                        </Typography>
+                                                    </Box>
+                                                )
+                                                : "Select Excel file"
+                                            }
+                                        </Button>
+                                    </label>
                                 </Box>
                             </Grid>
 
@@ -226,11 +258,11 @@ export default function ImportExcelPage() {
                                             }
                                         }}
                                     >
-                                        {loading ? "Đang upload..." : "Upload"}
+                                        {loading ? "Uploading..." : "Upload"}
                                     </Button>
 
                                     <Tooltip
-                                        title={hasErrors ? "Cần giải quyết lỗi trước khi approve" : ""}
+                                        title={hasErrors ? "Need to fix errors before approving" : ""}
                                         disableHoverListener={!hasErrors}
                                     >
                                         <span>
@@ -250,7 +282,7 @@ export default function ImportExcelPage() {
                                                     }
                                                 }}
                                             >
-                                                {approving ? "Đang approve..." : "Approve"}
+                                                {approving ? "Approving..." : "Approve"}
                                             </Button>
                                         </span>
                                     </Tooltip>
@@ -314,26 +346,26 @@ export default function ImportExcelPage() {
                                 <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} alignItems="center">
                                     <Stack direction="row" spacing={1} flexWrap="wrap">
                                         <Chip
-                                            label={`Tổng: ${details.totalRows}`}
+                                            label={`Total: ${details.totalRows}`}
                                             color="default"
                                             size="small"
                                             variant="outlined"
                                         />
                                         <Chip
-                                            label={`Hợp lệ: ${details.validRows}`}
+                                            label={`Valid: ${details.validRows}`}
                                             color="success"
                                             size="small"
                                         />
                                         <Chip
-                                            label={`Lỗi: ${details.invalidRows}`}
+                                            label={`Error: ${details.invalidRows}`}
                                             color="error"
                                             size="small"
                                         />
                                     </Stack>
                                     <FormControl size="small" sx={{ minWidth: 120 }}>
-                                        <InputLabel>Số dòng/trang</InputLabel>
+                                        <InputLabel>Rows per page</InputLabel>
                                         <Select
-                                            label="Số dòng/trang"
+                                            label="Rows per page"
                                             value={pageSize}
                                             onChange={(e) => setPageSize(Number(e.target.value))}
                                         >
@@ -424,7 +456,7 @@ export default function ImportExcelPage() {
                                                     minWidth: 200,
                                                 }}
                                             >
-                                                Lỗi
+                                                Error
                                             </TableCell>
                                         </TableRow>
                                     </TableHead>
@@ -520,39 +552,39 @@ export default function ImportExcelPage() {
                                 bgcolor: 'grey.50'
                             }}>
                                 <Typography variant="body2" color="text.secondary">
-                                    Trang {page} / {totalPages} • Tổng {details.rows.length} dòng
+                                    Page {page} / {totalPages} • Total {details.rows.length} rows
                                 </Typography>
                                 <ButtonGroup variant="outlined" size="small">
                                     <Button
                                         onClick={() => setPage(1)}
                                         disabled={page === 1}
                                     >
-                                        « Đầu
+                                        « First
                                     </Button>
                                     <Button
                                         onClick={() => setPage((p) => Math.max(1, p - 1))}
                                         disabled={page === 1}
                                     >
-                                        ‹ Trước
+                                        ‹ Previous
                                     </Button>
                                     <Button
                                         onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                                         disabled={page === totalPages}
                                     >
-                                        Sau ›
+                                        Next ›
                                     </Button>
                                     <Button
                                         onClick={() => setPage(totalPages)}
                                         disabled={page === totalPages}
                                     >
-                                        Cuối »
+                                        Last »
                                     </Button>
                                 </ButtonGroup>
                             </Box>
 
                             {hasErrors && (
                                 <Alert severity="warning" sx={{ m: 2, borderRadius: 2 }}>
-                                    ⚠️ Có {details.invalidRows} dòng không hợp lệ. Cần sửa lỗi trước khi approve.
+                                    ⚠️ Have {details.invalidRows} invalid rows. Please fix the errors before approving.
                                 </Alert>
                             )}
                         </CardContent>

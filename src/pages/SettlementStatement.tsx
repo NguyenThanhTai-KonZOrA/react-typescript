@@ -9,7 +9,6 @@ import {
     Chip,
     Container,
     FormControl,
-    Grid,
     InputLabel,
     MenuItem,
     Select,
@@ -23,7 +22,6 @@ import {
     Typography,
     Paper,
     CircularProgress,
-    TablePagination,
     Stack,
     useTheme,
     useMediaQuery,
@@ -32,7 +30,6 @@ import {
 import { Download, Search } from "@mui/icons-material";
 import { settlementStatementSearch } from "../services/api";
 import { SettlementStatementRequest, SettlementStatementResponse } from "../types";
-import { useNavigate } from "react-router-dom";
 import { Layout } from "../components/layout";
 
 export default function SettlementStatementPage() {
@@ -46,7 +43,6 @@ export default function SettlementStatementPage() {
     const [results, setResults] = useState<SettlementStatementResponse[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const navigate = useNavigate();
     // Pagination state
     const [page, setPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -71,9 +67,9 @@ export default function SettlementStatementPage() {
             };
             const res = await settlementStatementSearch(req);
             setResults(res);
-            setPage(1); // Reset về trang đầu khi tìm kiếm mới
+            setPage(1); // Reset to first page on new search
         } catch (e: any) {
-            setError(e.message || "Lỗi tìm kiếm");
+            setError(e.message || "Error fetching data");
             setResults([]);
         } finally {
             setLoading(false);
@@ -124,7 +120,7 @@ export default function SettlementStatementPage() {
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                 <Search color="primary" />
                                 <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                                    Biên bản quyết toán / Settlement Statement
+                                    Settlement Statement
                                 </Typography>
                             </Box>
                         }
@@ -145,7 +141,7 @@ export default function SettlementStatementPage() {
                             }}>
                                 <Box sx={{ flex: 1 }}>
                                     <TextField
-                                        label="Người đại diện / Team Representative"
+                                        label="Team Representative"
                                         name="representative"
                                         value={filters.representative}
                                         onChange={handleChange}
@@ -156,7 +152,7 @@ export default function SettlementStatementPage() {
                                 </Box>
                                 <Box sx={{ flex: 1 }}>
                                     <TextField
-                                        label="Mã người đại diện / ID"
+                                        label="Representative ID"
                                         name="representativeId"
                                         value={filters.representativeId}
                                         onChange={handleChange}
@@ -167,7 +163,7 @@ export default function SettlementStatementPage() {
                                 </Box>
                                 <Box sx={{ flex: 1 }}>
                                     <TextField
-                                        label="Tên chương trình / Program Name"
+                                        label="Program Name"
                                         name="programName"
                                         value={filters.programName}
                                         onChange={handleChange}
@@ -186,7 +182,7 @@ export default function SettlementStatementPage() {
                             }}>
                                 <Box sx={{ flex: { xs: 1, md: 'auto' } }}>
                                     <TextField
-                                        label="Ngày bắt đầu"
+                                        label="Start Date"
                                         name="dateStart"
                                         type="date"
                                         value={filters.dateStart}
@@ -199,7 +195,7 @@ export default function SettlementStatementPage() {
                                 </Box>
                                 <Box sx={{ flex: { xs: 1, md: 'auto' } }}>
                                     <TextField
-                                        label="Ngày kết thúc"
+                                        label="End Date"
                                         name="dateEnd"
                                         type="date"
                                         value={filters.dateEnd}
@@ -233,7 +229,7 @@ export default function SettlementStatementPage() {
                                         fullWidth={isMobile}
                                         size="large"
                                     >
-                                        {loading ? <CircularProgress size={20} color="inherit" /> : "Tìm kiếm"}
+                                        {loading ? <CircularProgress size={20} color="inherit" /> : "Search"}
                                     </Button>
 
                                     <Button
@@ -271,10 +267,10 @@ export default function SettlementStatementPage() {
                         title={
                             <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
                                 <Typography variant="h6" sx={{ fontWeight: 600 }} color="error">
-                                    📊 Nội dung quyết toán/ Settlement Details:
+                                    📊 Settlement Details:
                                 </Typography>
                                 <Chip
-                                    label={`Tổng: ${results.length}`}
+                                    label={`Total: ${results.length}`}
                                     color="default"
                                     size="small"
                                     variant="outlined"
@@ -284,9 +280,9 @@ export default function SettlementStatementPage() {
                         action={
                             <Stack direction="row" spacing={1} alignItems="center">
                                 <FormControl size="small" sx={{ minWidth: 120 }}>
-                                    <InputLabel>Số dòng/trang</InputLabel>
+                                    <InputLabel>Rows per page</InputLabel>
                                     <Select
-                                        label="Số dòng/trang"
+                                        label="Rows per page"
                                         value={rowsPerPage}
                                         onChange={(e) => {
                                             setRowsPerPage(Number(e.target.value));
@@ -353,7 +349,7 @@ export default function SettlementStatementPage() {
                                                 zIndex: 1001,
                                             }}
                                         >
-                                            STT No.
+                                            No.
                                         </TableCell>
                                         <TableCell
                                             align="center"
@@ -364,7 +360,7 @@ export default function SettlementStatementPage() {
                                                 minWidth: 150,
                                             }}
                                         >
-                                            Mã thành viên / Member ID
+                                            Member ID
                                         </TableCell>
                                         <TableCell
                                             align="center"
@@ -375,7 +371,7 @@ export default function SettlementStatementPage() {
                                                 minWidth: 180,
                                             }}
                                         >
-                                            Tên thành viên / Member name
+                                            Member Name
                                         </TableCell>
                                         <TableCell
                                             align="center"
@@ -386,7 +382,7 @@ export default function SettlementStatementPage() {
                                                 minWidth: 140,
                                             }}
                                         >
-                                            Ngày gia nhập / Joined date
+                                            Joined Date
                                         </TableCell>
                                         <TableCell
                                             align="center"
@@ -397,7 +393,7 @@ export default function SettlementStatementPage() {
                                                 minWidth: 170,
                                             }}
                                         >
-                                            Ngày cuối cùng / Last gaming date
+                                            Last Gaming Date
                                         </TableCell>
                                         <TableCell
                                             align="center"
@@ -408,7 +404,7 @@ export default function SettlementStatementPage() {
                                                 minWidth: 120,
                                             }}
                                         >
-                                            Đủ điều kiện / Eligible (Y/N)
+                                            Eligible (Y/N)
                                         </TableCell>
                                         <TableCell
                                             align="center"
@@ -419,7 +415,7 @@ export default function SettlementStatementPage() {
                                                 minWidth: 180,
                                             }}
                                         >
-                                            Casino thắng/(thua) / Casino win/(loss)
+                                            Casino win/(loss)
                                         </TableCell>
                                     </TableRow>
                                 </TableHead>
@@ -427,7 +423,7 @@ export default function SettlementStatementPage() {
                                     {pagedResults.length === 0 && (
                                         <TableRow>
                                             <TableCell colSpan={7} align="center">
-                                                Không có dữ liệu
+                                                No data available
                                             </TableCell>
                                         </TableRow>
                                     )}
@@ -479,32 +475,32 @@ export default function SettlementStatementPage() {
                             bgcolor: 'grey.50'
                         }}>
                             <Typography variant="body2" color="text.secondary">
-                                Trang {results.length === 0 ? 0 : page} / {totalPages} • Tổng {results.length} dòng
+                                Page {results.length === 0 ? 0 : page} / {totalPages} • Total {results.length} rows
                             </Typography>
                             <ButtonGroup variant="outlined" size="small">
                                 <Button
                                     onClick={() => setPage(1)}
                                     disabled={page === 1}
                                 >
-                                    « Đầu
+                                    « First
                                 </Button>
                                 <Button
                                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                                     disabled={page === 1}
                                 >
-                                    ‹ Trước
+                                    ‹ Previous
                                 </Button>
                                 <Button
                                     onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                                     disabled={page >= totalPages}
                                 >
-                                    Sau ›
+                                    Next ›
                                 </Button>
                                 <Button
                                     onClick={() => setPage(totalPages)}
                                     disabled={page >= totalPages}
                                 >
-                                    Cuối »
+                                    Last »
                                 </Button>
                             </ButtonGroup>
                         </Box>
@@ -517,10 +513,10 @@ export default function SettlementStatementPage() {
                             borderColor: 'divider'
                         }}>
                             <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                                Tổng/Total: {totalWinLoss.toLocaleString()}
+                                Total: {totalWinLoss.toLocaleString()}
                             </Typography>
                             <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                                Chi trả thưởng/Award settlement: {awardSettlement.toLocaleString(undefined, { maximumFractionDigits: 1 })}
+                                Award Settlement: {awardSettlement.toLocaleString(undefined, { maximumFractionDigits: 1 })}
                             </Typography>
                         </Box>
                     </CardContent>

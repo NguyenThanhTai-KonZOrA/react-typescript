@@ -18,14 +18,12 @@ const About: React.FC = () => {
             </Typography>
             
             <Typography variant="body1" paragraph sx={{ color: 'text.secondary', lineHeight: 1.7 }}>
-              Ứng dụng web được xây dựng bằng React + TypeScript + Material-UI, 
-              chuyên dụng cho việc xử lý và quản lý dữ liệu Excel với tính năng import, 
-              validate và xuất báo cáo settlement.
+              This application is built using React and TypeScript, leveraging Material-UI for a modern and responsive user interface. It provides functionalities for importing Excel files, managing settlement statements, and user authentication.
             </Typography>
 
             <Box sx={{ mt: 4 }}>
               <Typography variant="h6" gutterBottom sx={{ color: 'primary.main', mb: 2 }}>
-                Tính năng chính:
+                Main Features:
               </Typography>
               
               <List>
@@ -35,7 +33,7 @@ const About: React.FC = () => {
                   </ListItemIcon>
                   <ListItemText 
                     primary="Import Excel Files" 
-                    secondary="Hỗ trợ upload và xử lý file Excel với validation dữ liệu"
+                    secondary="Supports importing and processing Excel files with validation and error handling"
                   />
                 </ListItem>
                 
@@ -45,7 +43,7 @@ const About: React.FC = () => {
                   </ListItemIcon>
                   <ListItemText 
                     primary="Settlement Statement" 
-                    secondary="Quản lý và tìm kiếm thông tin settlement với bộ lọc nâng cao"
+                    secondary="Manages and searches settlement information with advanced filters"
                   />
                 </ListItem>
                 
@@ -55,7 +53,7 @@ const About: React.FC = () => {
                   </ListItemIcon>
                   <ListItemText 
                     primary="Authentication" 
-                    secondary="Hệ thống xác thực và phân quyền người dùng"
+                    secondary="User authentication and authorization system"
                   />
                 </ListItem>
               </List>

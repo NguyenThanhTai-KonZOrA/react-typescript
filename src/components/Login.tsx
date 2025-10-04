@@ -1,135 +1,218 @@
 import React, { useState, useEffect } from "react";
-import { 
-  Container, 
-  TextField, 
-  Button, 
-  Typography, 
-  Box, 
+import {
+  Container,
+  TextField,
+  Button,
+  Typography,
+  Box,
   Alert,
-  CircularProgress 
+  CircularProgress,
+  Card,
+  CardContent,
+  CardHeader,
+  InputAdornment,
+  IconButton,
 } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
 import { login as loginApi } from "../services/api";
 import { useAuth } from "../context/AuthContext";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 const Login: React.FC = () => {
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
+  const [showPwd, setShowPwd] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, token } = useAuth(); // 👈 Use AuthContext
+  const { login, token } = useAuth();
 
-  // Kiểm tra nếu đã đăng nhập thì redirect
   useEffect(() => {
     if (token) {
-      // 👇 Redirect to intended URL or default to import-excel
       const from = (location.state as any)?.from?.pathname || "/import-excel";
       navigate(from, { replace: true });
     }
-  }, [token, navigate, location.state]); // 👈 Include location.state
+  }, [token, navigate, location.state]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
-    // Validation cơ bản
     if (!username.trim() || !password.trim()) {
-      setError("Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu");
+      setError("Please enter both username and password");
       setLoading(false);
       return;
     }
 
     try {
       const response = await loginApi({ userName: username, password });
-      
-      // 👇 Use AuthContext login instead of direct localStorage
       login(response.userName, response.token);
-      
-      console.log("Login success:", response);
-      
-      // 👇 Redirect to intended URL or default
       const from = (location.state as any)?.from?.pathname || "/import-excel";
       navigate(from, { replace: true });
     } catch (err: any) {
-      setError(err.message || "Đã xảy ra lỗi khi đăng nhập");
-      console.error("Login error:", err);
+      setError(err.message || "Login failed");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Container maxWidth="sm">
-      <Box 
-        display="flex" 
-        flexDirection="column" 
-        minHeight="100vh" 
-        justifyContent="center"
-        sx={{ py: 4 }}
-      >
-        <Box sx={{ textAlign: 'center', mb: 4 }}>
-          <Typography variant="h4" component="h1" gutterBottom>
-            Đăng Nhập
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
-            Vui lòng đăng nhập để tiếp tục
-          </Typography>
-        </Box>
-
-        <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%' }}>
-          <TextField
-            required
-            fullWidth
-            margin="normal"
-            label="Tên đăng nhập"
-            value={username}
-            onChange={(e) => setUserName(e.target.value)}
-            disabled={loading}
-            autoComplete="username"
-            autoFocus
+    <Box
+      sx={{
+        position: "fixed",
+        inset: 0,
+        bgcolor: "linear-gradient(135deg, #e3f0ff 0%, #f9f9f9 100%)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        overflow: "hidden",
+        minHeight: "100vh",
+        minWidth: "100vw",
+      }}
+    >
+      <Container maxWidth="sm" sx={{ px: { xs: 1, sm: 2 } }}>
+        <Card
+          sx={{
+            borderRadius: 4,
+            boxShadow: 6,
+            px: { xs: 2, sm: 4 },
+            py: 4,
+            bgcolor: "background.paper",
+            width: "100%",
+            maxWidth: 480,
+          }}
+        >
+          <CardHeader
+            avatar={
+              <Box
+                sx={{
+                  bgcolor: "primary.main",
+                  width: 56,
+                  height: 56,
+                  borderRadius: "50%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  boxShadow: 2,
+                  mb: 1,
+                }}
+              >
+                <LockOutlinedIcon sx={{ color: "white", fontSize: 32 }} />
+              </Box>
+            }
+            title={
+              <Typography
+                variant="h5"
+                sx={{
+                  fontWeight: 700,
+                  letterSpacing: 1,
+                  color: "primary.main",
+                  mt: 1,
+                }}
+              >
+                Sign in
+              </Typography>
+            }
+            subheader={
+              <Typography variant="body2" color="text.secondary">
+                Welcome back! Please Login to continue.
+              </Typography>
+            }
+            sx={{ textAlign: "center", pb: 0 }}
           />
-          <TextField
-            required
-            fullWidth
-            margin="normal"
-            type="password"
-            label="Mật khẩu"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            disabled={loading}
-            autoComplete="current-password"
-          />
-          
-          {error && (
-            <Alert severity="error" sx={{ mt: 2 }}>
-              {error}
-            </Alert>
-          )}
+          <CardContent>
+            <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+              <TextField
+                required
+                fullWidth
+                margin="normal"
+                label="Username"
+                value={username}
+                onChange={(e) => setUserName(e.target.value)}
+                disabled={loading}
+                autoComplete="username"
+                autoFocus
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <PersonOutlineIcon color="primary" />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <TextField
+                required
+                fullWidth
+                margin="normal"
+                type={showPwd ? "text" : "password"}
+                label="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={loading}
+                autoComplete="current-password"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <LockOutlinedIcon color="primary" />
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={() => setShowPwd((show) => !show)}
+                        edge="end"
+                        size="small"
+                      >
+                        {showPwd ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
 
-          <Button 
-            type="submit" 
-            variant="contained" 
-            color="primary" 
-            fullWidth 
-            size="large"
-            disabled={loading}
-            sx={{ mt: 3, mb: 2, py: 1.5 }}
-          >
-            {loading ? (
-              <>
-                <CircularProgress size={20} sx={{ mr: 1 }} />
-                Đang đăng nhập...
-              </>
-            ) : (
-              "Đăng Nhập"
-            )}
-          </Button>
-        </Box>
-      </Box>
-    </Container>
+              {error && (
+                <Alert severity="error" sx={{ mt: 2 }}>
+                  {error}
+                </Alert>
+              )}
+
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                fullWidth
+                size="large"
+                disabled={loading}
+                sx={{
+                  mt: 3,
+                  mb: 2,
+                  py: 1.5,
+                  fontWeight: 600,
+                  fontSize: "1rem",
+                  letterSpacing: 1,
+                  boxShadow: 3,
+                }}
+              >
+                {loading ? (
+                  <>
+                    <CircularProgress size={20} sx={{ mr: 1 }} />
+                    Signing in...
+                  </>
+                ) : (
+                  "Sign in"
+                )}
+              </Button>
+            </Box>
+          </CardContent>
+        </Card>
+      </Container>
+    </Box>
   );
 };
 

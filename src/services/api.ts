@@ -13,7 +13,10 @@ import {
   TeamRepresentativesResponse
 } from "../types";
 
-const API_BASE = "http://10.21.10.1:8086";
+const API_BASE = (window as any)._env_?.API_BASE;
+
+// Sử dụng API_BASE như bình thường
+console.log("API_BASE:", API_BASE);
 
 type ApiEnvelope<T> = {
   status: number;

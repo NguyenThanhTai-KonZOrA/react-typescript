@@ -13,7 +13,7 @@ const Home: React.FC = () => {
               Export Excel Web Application
             </Typography>
             <Typography variant="h6" color="text.secondary" sx={{ mt: 2 }}>
-              Chào mừng bạn đến với ứng dụng quản lý và xử lý dữ liệu Excel
+              This application allows users to log in, upload Excel files, and manage team representatives and settlement statements with advanced filtering and pagination features.
             </Typography>
           </CardContent>
         </Card>

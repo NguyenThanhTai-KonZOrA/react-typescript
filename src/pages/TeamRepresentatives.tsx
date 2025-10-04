@@ -72,9 +72,9 @@ export default function TeamRepresentativesPage() {
             };
             const res = await getTeamRepresentatives(req);
             setResults(res);
-            setPage(1); // Reset về trang đầu khi tìm kiếm mới
+            setPage(1); // Reset to first page on new search
         } catch (e: any) {
-            setError(e.message || "Lỗi tìm kiếm");
+            setError(e.message || "Search error");
             setResults([]);
         } finally {
             setLoading(false);
@@ -97,13 +97,13 @@ export default function TeamRepresentativesPage() {
 
             if (res && res.isPayment) {
                 handleSearch();
-                setSuccess(`Thanh toán thành công cho ${item.teamRepresentativeName}`);
-                // Refresh data sau khi payment thành công
+                setSuccess(`Payment successful for ${item.teamRepresentativeName}`);
+                // Refresh data after successful payment
             } else {
-                setError("Thanh toán không thành công");
+                setError("Payment failed");
             }
         } catch (e: any) {
-            setError(e.message || "Lỗi khi thực hiện thanh toán");
+            setError(e.message || "Error occurred during payment");
         } finally {
             setPaymentLoading("");
         }
@@ -122,9 +122,9 @@ export default function TeamRepresentativesPage() {
             };
             
             await downloadCrpReport(req);
-            setSuccess(`Tải báo cáo thành công cho ${item.teamRepresentativeName}`);
+            setSuccess(`Report downloaded successfully for ${item.teamRepresentativeName}`);
         } catch (e: any) {
-            setError(e.message || "Lỗi khi tải báo cáo");
+            setError(e.message || "Error occurred during report download");
         } finally {
             setDownloadLoading("");
         }
@@ -190,7 +190,7 @@ export default function TeamRepresentativesPage() {
                             }}>
                                 <Box sx={{ flex: 1 }}>
                                     <TextField
-                                        label="Tên đại diện / Team Representative Name"
+                                        label="Team Representative Name"
                                         name="teamRepresentativeName"
                                         value={filters.teamRepresentativeName}
                                         onChange={handleChange}
@@ -201,7 +201,7 @@ export default function TeamRepresentativesPage() {
                                 </Box>
                                 <Box sx={{ flex: 1 }}>
                                     <TextField
-                                        label="Mã đại diện / Team Representative ID"
+                                        label="Team Representative ID"
                                         name="teamRepresentativeId"
                                         value={filters.teamRepresentativeId}
                                         onChange={handleChange}
@@ -212,7 +212,7 @@ export default function TeamRepresentativesPage() {
                                 </Box>
                                 <Box sx={{ flex: 1 }}>
                                     <TextField
-                                        label="Tên chương trình / Program Name"
+                                        label="Program Name"
                                         name="programName"
                                         value={filters.programName}
                                         onChange={handleChange}
@@ -231,15 +231,15 @@ export default function TeamRepresentativesPage() {
                             }}>
                                 <Box sx={{ flex: { xs: 1, md: '0 0 300px' } }}>
                                     <FormControl fullWidth size="small">
-                                        <InputLabel>Tháng</InputLabel>
+                                        <InputLabel>Month</InputLabel>
                                         <Select
                                             name="month"
                                             value={filters.month}
-                                            label="Tháng"
+                                            label="Month"
                                             onChange={(e) => setFilters({ ...filters, month: e.target.value })}
                                         >
                                             <MenuItem value="">
-                                                <em>Tất cả</em>
+                                                <em>All</em>
                                             </MenuItem>
                                             {monthOptions.map((option) => (
                                                 <MenuItem key={option.value} value={option.value}>
@@ -272,7 +272,7 @@ export default function TeamRepresentativesPage() {
                                         fullWidth={isMobile}
                                         size="large"
                                     >
-                                        {loading ? <CircularProgress size={20} color="inherit" /> : "Tìm kiếm"}
+                                        {loading ? <CircularProgress size={20} color="inherit" /> : "Search"}
                                     </Button>
                                 </Box>
                             </Box>
@@ -298,10 +298,10 @@ export default function TeamRepresentativesPage() {
                         title={
                             <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
                                 <Typography variant="h6" sx={{ fontWeight: 600 }} color="primary">
-                                    📊 Danh sách Team Representatives:
+                                    📊 Team Representatives List:
                                 </Typography>
                                 <Chip
-                                    label={`Tổng: ${results.length}`}
+                                    label={`Total: ${results.length}`}
                                     color="default"
                                     size="small"
                                     variant="outlined"
@@ -311,9 +311,9 @@ export default function TeamRepresentativesPage() {
                         action={
                             <Stack direction="row" spacing={1} alignItems="center">
                                 <FormControl size="small" sx={{ minWidth: 120 }}>
-                                    <InputLabel>Số dòng/trang</InputLabel>
+                                    <InputLabel>Rows per page</InputLabel>
                                     <Select
-                                        label="Số dòng/trang"
+                                        label="Rows per page"
                                         value={rowsPerPage}
                                         onChange={(e) => {
                                             setRowsPerPage(Number(e.target.value));
@@ -380,7 +380,7 @@ export default function TeamRepresentativesPage() {
                                                 zIndex: 1001,
                                             }}
                                         >
-                                            STT
+                                            No.
                                         </TableCell>
                                         <TableCell
                                             align="center"
@@ -402,7 +402,7 @@ export default function TeamRepresentativesPage() {
                                                 minWidth: 200,
                                             }}
                                         >
-                                            Tên đại diện / Team Representative Name
+                                            Representative Name
                                         </TableCell>
                                         <TableCell
                                             align="center"
@@ -413,9 +413,9 @@ export default function TeamRepresentativesPage() {
                                                 minWidth: 150,
                                             }}
                                         >
-                                            Mã đại diện / Team Representative ID
+                                            Representative ID
                                         </TableCell>
-                                        <TableCell
+                                        {/* <TableCell
                                             align="center"
                                             sx={{
                                                 fontWeight: 'bold',
@@ -424,8 +424,8 @@ export default function TeamRepresentativesPage() {
                                                 minWidth: 180,
                                             }}
                                         >
-                                            Tên chương trình / Program Name
-                                        </TableCell>
+                                            Program Name
+                                        </TableCell> */}
                                         <TableCell
                                             align="center"
                                             sx={{
@@ -435,7 +435,7 @@ export default function TeamRepresentativesPage() {
                                                 minWidth: 120,
                                             }}
                                         >
-                                            Tháng / Month
+                                            Month
                                         </TableCell>
                                         <TableCell
                                             align="center"
@@ -468,7 +468,7 @@ export default function TeamRepresentativesPage() {
                                                 minWidth: 150,
                                             }}
                                         >
-                                            Tổng thưởng / Award Total
+                                            Total Award
                                         </TableCell>
                                         <TableCell
                                             align="center"
@@ -479,7 +479,7 @@ export default function TeamRepresentativesPage() {
                                                 minWidth: 150,
                                             }}
                                         >
-                                            Trạng thái / Status
+                                            Status
                                         </TableCell>
                                         <TableCell
                                             align="center"
@@ -490,7 +490,7 @@ export default function TeamRepresentativesPage() {
                                                 minWidth: 120,
                                             }}
                                         >
-                                            Thao tác / Actions
+                                            Actions
                                         </TableCell>
                                     </TableRow>
                                 </TableHead>
@@ -501,7 +501,7 @@ export default function TeamRepresentativesPage() {
                                                 {loading ? (
                                                     <CircularProgress sx={{ my: 2 }} />
                                                 ) : (
-                                                    "Không có dữ liệu"
+                                                    "No data available"
                                                 )}
                                             </TableCell>
                                         </TableRow>
@@ -533,7 +533,7 @@ export default function TeamRepresentativesPage() {
                                                 <TableCell align="center">{row.segment}</TableCell>
                                                 <TableCell align="center">{row.teamRepresentativeName}</TableCell>
                                                 <TableCell align="center">{row.teamRepresentativeId}</TableCell>
-                                                <TableCell align="center">Team Together – Win Together</TableCell>
+                                                {/* <TableCell align="center">Team Together – Win Together</TableCell> */}
                                                 <TableCell align="center">{formatMonth(row.month)}</TableCell>
                                                 <TableCell align="center">{row.settlementDoc}</TableCell>
                                                 <TableCell align="center">
@@ -568,14 +568,14 @@ export default function TeamRepresentativesPage() {
                                                 </TableCell>
                                                 <TableCell align="center">
                                                     <Chip
-                                                        label={row.isPayment ? "Đã thanh toán" : "Chưa thanh toán"}
+                                                        label={row.isPayment ? "Paid" : "Unpaid"}
                                                         color={row.isPayment ? "success" : "warning"}
                                                         size="small"
                                                         variant={row.isPayment ? "filled" : "outlined"}
                                                     />
                                                 </TableCell>
                                                 <TableCell align="center">
-                                                    <Tooltip title={row.isPayment ? "Đã thanh toán" : "Thực hiện thanh toán"}>
+                                                    <Tooltip title={row.isPayment ? "Paid" : "Mark as paid"}>
                                                         <span>
                                                             <IconButton
                                                                 color={row.isPayment ? "success" : "primary"}
@@ -637,7 +637,7 @@ export default function TeamRepresentativesPage() {
                             bgcolor: 'grey.50'
                         }}>
                             <Typography variant="body2" color="text.secondary">
-                                Trang {results.length === 0 ? 0 : page} / {totalPages} • Tổng {results.length} dòng
+                                Page {results.length === 0 ? 0 : page} / {totalPages} • Total {results.length} rows
                             </Typography>
                             <Stack direction="row" spacing={1}>
                                 <Button
@@ -646,7 +646,7 @@ export default function TeamRepresentativesPage() {
                                     onClick={() => setPage(1)}
                                     disabled={page === 1}
                                 >
-                                    « Đầu
+                                    « First
                                 </Button>
                                 <Button
                                     variant="outlined"
@@ -654,7 +654,7 @@ export default function TeamRepresentativesPage() {
                                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                                     disabled={page === 1}
                                 >
-                                    ‹ Trước
+                                    ‹ Previous
                                 </Button>
                                 <Button
                                     variant="outlined"
@@ -662,7 +662,7 @@ export default function TeamRepresentativesPage() {
                                     onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                                     disabled={page >= totalPages}
                                 >
-                                    Sau ›
+                                    Next ›
                                 </Button>
                                 <Button
                                     variant="outlined"
@@ -670,7 +670,7 @@ export default function TeamRepresentativesPage() {
                                     onClick={() => setPage(totalPages)}
                                     disabled={page >= totalPages}
                                 >
-                                    Cuối »
+                                    Last »
                                 </Button>
                             </Stack>
                         </Box>
