@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     Box,
     Button,
@@ -27,21 +27,27 @@ import {
     Alert,
     IconButton,
     Tooltip,
+    Grid,
 } from "@mui/material";
 import { Search, Groups, CheckCircle, FileDownload } from "@mui/icons-material";
 import RestoreIcon from '@mui/icons-material/Restore';
 import PaymentIcon from '@mui/icons-material/Payment';
+import PrintIcon from '@mui/icons-material/Print';
+import RefreshIcon from "@mui/icons-material/Refresh";
 import { getTeamRepresentatives, paymentTeamRepresentatives, downloadCrpReport, unPaidTeamRepresentatives } from "../services/api";
 import { TeamRepresentativesRequest, TeamRepresentativesResponse, PaymentTeamRepresentativesRequest, GenerateCrpReportRequest, UnPaidTeamRepresentativesResponse, UnPaidTeamRepresentativesRequest } from "../types";
 import { Layout } from "../components/layout";
 
 export default function TeamRepresentativesPage() {
-    const [filters, setFilters] = useState({
+    // Set default filter values
+    const defaultFilters = {
         teamRepresentativeName: "",
         teamRepresentativeId: "",
         programName: "",
-        month: ""
-    });
+        month: "",
+        status: ""
+    };
+    const [filters, setFilters] = useState(defaultFilters);
     const [results, setResults] = useState<TeamRepresentativesResponse[]>([]);
     const [loading, setLoading] = useState(false);
     const [paymentLoading, setPaymentLoading] = useState<string>(""); // Track which item is being processed
@@ -69,7 +75,8 @@ export default function TeamRepresentativesPage() {
                 TeamRepresentativeName: filters.teamRepresentativeName,
                 TeamRepresentativeId: filters.teamRepresentativeId,
                 ProgramName: filters.programName,
-                Month: filters.month
+                Month: filters.month,
+                Status: filters.status
             };
             const res = await getTeamRepresentatives(req);
             setResults(res);
@@ -92,7 +99,8 @@ export default function TeamRepresentativesPage() {
             const req: PaymentTeamRepresentativesRequest = {
                 TeamRepresentativeName: item.teamRepresentativeName,
                 TeamRepresentativeId: item.teamRepresentativeId,
-                Month: item.month
+                Month: item.month,
+                PaymentTeamRepresentativesId: item.paymentTeamRepresentativesId
             };
             const res = await paymentTeamRepresentatives(req);
 
@@ -149,6 +157,7 @@ export default function TeamRepresentativesPage() {
             };
 
             await downloadCrpReport(req);
+            handleSearch();
             setSuccess(`Report downloaded successfully for ${item.teamRepresentativeName}`);
         } catch (e: any) {
             setError(e.message || "Error occurred during report download");
@@ -165,6 +174,17 @@ export default function TeamRepresentativesPage() {
         const month = String(d.getMonth() + 1).padStart(2, "0");
         const year = d.getFullYear();
         return `${month}/${year}`;
+    }
+
+    function formatDate(dateStr?: string) {
+        if (!dateStr) return "";
+        if (dateStr === "0001-01-01T00:00:00") return "-";
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return "";
+        const day = String(d.getDate()).padStart(2, "0");
+        const month = String(d.getMonth() + 1).padStart(2, "0");
+        const year = d.getFullYear();
+        return `${day}/${month}/${year}`;
     }
 
     // Pagination calculations
@@ -185,6 +205,22 @@ export default function TeamRepresentativesPage() {
     };
 
     const monthOptions = generateMonthOptions();
+
+    useEffect(() => {
+        handleSearch();
+        // eslint-disable-next-line
+    }, [filters]);
+
+    const handleRefreshFilter = () => {
+        setFilters(defaultFilters);
+        // auto refresh data
+        fetchData(defaultFilters);
+    };
+
+    function fetchData(defaultFilters: { teamRepresentativeName: string; teamRepresentativeId: string; programName: string; month: string; }) {
+        handleSearch();
+    }
+
 
     return (
         <Layout>
@@ -237,7 +273,7 @@ export default function TeamRepresentativesPage() {
                                         variant="outlined"
                                     />
                                 </Box>
-                                <Box sx={{ flex: 1 }}>
+                                {/* <Box sx={{ flex: 1 }}>
                                     <TextField
                                         label="Program Name"
                                         name="programName"
@@ -247,6 +283,24 @@ export default function TeamRepresentativesPage() {
                                         size="small"
                                         variant="outlined"
                                     />
+                                </Box> */}
+                                <Box sx={{ flex: 1 }}>
+                                    <FormControl fullWidth size="small">
+                                        <InputLabel id="status-label">Status</InputLabel>
+                                        <Select
+                                            labelId="status-label"
+                                            label="Status"
+                                            name="status"
+                                            value={filters.status}
+                                            onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+                                        >
+                                            <MenuItem value="">All</MenuItem>
+                                            <MenuItem value="Pending">Pending</MenuItem>
+                                            <MenuItem value="Paid">Paid</MenuItem>
+                                            <MenuItem value="Voided">Voided</MenuItem>
+                                            <MenuItem value="Failed">Failed</MenuItem>
+                                        </Select>
+                                    </FormControl>
                                 </Box>
                             </Box>
 
@@ -256,7 +310,7 @@ export default function TeamRepresentativesPage() {
                                 gap: 3,
                                 alignItems: { md: 'center' }
                             }}>
-                                <Box sx={{ flex: { xs: 1, md: '0 0 300px' } }}>
+                                {/* <Box sx={{ flex: { xs: 1, md: '0 0 300px' } }}>
                                     <FormControl fullWidth size="small">
                                         <InputLabel>Month</InputLabel>
                                         <Select
@@ -275,7 +329,7 @@ export default function TeamRepresentativesPage() {
                                             ))}
                                         </Select>
                                     </FormControl>
-                                </Box>
+                                </Box> */}
 
                                 <Box sx={{
                                     flex: { xs: 1, md: 'auto' },
@@ -300,6 +354,15 @@ export default function TeamRepresentativesPage() {
                                         size="large"
                                     >
                                         {loading ? <CircularProgress size={20} color="inherit" /> : "Search"}
+                                    </Button>
+                                    <Button
+                                        variant="outlined"
+                                        color="primary"
+                                        startIcon={<RefreshIcon />}
+                                        onClick={handleRefreshFilter}
+                                        sx={{ ml: 2, minWidth: 120, fontWeight: 600 }}
+                                    >
+                                        Refresh
                                     </Button>
                                 </Box>
                             </Box>
@@ -514,6 +577,28 @@ export default function TeamRepresentativesPage() {
                                                 fontWeight: 'bold',
                                                 bgcolor: 'primary.main',
                                                 color: 'white',
+                                                minWidth: 150,
+                                            }}
+                                        >
+                                            Payment By
+                                        </TableCell>
+                                        <TableCell
+                                            align="center"
+                                            sx={{
+                                                fontWeight: 'bold',
+                                                bgcolor: 'primary.main',
+                                                color: 'white',
+                                                minWidth: 150,
+                                            }}
+                                        >
+                                            Payment Date
+                                        </TableCell>
+                                        <TableCell
+                                            align="center"
+                                            sx={{
+                                                fontWeight: 'bold',
+                                                bgcolor: 'primary.main',
+                                                color: 'white',
                                                 minWidth: 120,
                                             }}
                                         >
@@ -603,6 +688,8 @@ export default function TeamRepresentativesPage() {
                                                         variant={row.isPayment ? "filled" : "outlined"}
                                                     />
                                                 </TableCell>
+                                                <TableCell align="center">{row.isPayment ? row.paymentBy : "-"}</TableCell>
+                                                <TableCell align="center">{formatDate(row.paymentDate)}</TableCell>
                                                 <TableCell align="center">
                                                     <Tooltip title={row.isPayment ? "Paid" : "Mark as paid"}>
                                                         <span>
@@ -625,13 +712,12 @@ export default function TeamRepresentativesPage() {
                                                                 )}
                                                             </IconButton>
                                                         </span>
-
                                                     </Tooltip>
                                                     <Tooltip title="UnPaid">
                                                         <span>
                                                             <IconButton
                                                                 color="primary"
-                                                                onClick={() => handleUnPaid(row)}
+                                                                onClick={() => handleUnPaid({ paymentTeamRepresentativesId: row.paymentTeamRepresentativesId, isUnPaid: false })}
                                                                 disabled={!row.isPayment || isUnPaidLoading || loading}
                                                                 sx={{
                                                                     '&:hover': {
@@ -647,26 +733,50 @@ export default function TeamRepresentativesPage() {
                                                             </IconButton>
                                                         </span>
                                                     </Tooltip>
-                                                    <Tooltip title="Download">
-                                                        <span>
-                                                            <IconButton
-                                                                color="primary"
-                                                                onClick={() => handleDownload(row)}
-                                                                disabled={isDownloadLoading || loading}
-                                                                sx={{
-                                                                    '&:hover': {
-                                                                        bgcolor: 'primary.50'
-                                                                    }
-                                                                }}
-                                                            >
-                                                                {isDownloadLoading ? (
-                                                                    <CircularProgress size={20} />
-                                                                ) : (
-                                                                    <FileDownload />
-                                                                )}
-                                                            </IconButton>
-                                                        </span>
-                                                    </Tooltip>
+                                                    {!row.isPrintf && (
+                                                        <Tooltip title="Download">
+                                                            <span>
+                                                                <IconButton
+                                                                    color="primary"
+                                                                    onClick={() => handleDownload(row)}
+                                                                    disabled={isDownloadLoading || loading || !row.isPayment}
+                                                                    sx={{
+                                                                        '&:hover': {
+                                                                            bgcolor: 'primary.50'
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    {isDownloadLoading ? (
+                                                                        <CircularProgress size={20} />
+                                                                    ) : (
+                                                                        <FileDownload />
+                                                                    )}
+                                                                </IconButton>
+                                                            </span>
+                                                        </Tooltip>
+                                                    )}
+                                                    {row.isPrintf && (
+                                                        <Tooltip title="Reprint">
+                                                            <span>
+                                                                <IconButton
+                                                                    color="primary"
+                                                                    onClick={() => handleDownload(row)}
+                                                                    disabled={isDownloadLoading || loading}
+                                                                    sx={{
+                                                                        '&:hover': {
+                                                                            bgcolor: 'primary.50'
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    {isDownloadLoading ? (
+                                                                        <CircularProgress size={20} />
+                                                                    ) : (
+                                                                        <PrintIcon />
+                                                                    )}
+                                                                </IconButton>
+                                                            </span>
+                                                        </Tooltip>
+                                                    )}
                                                 </TableCell>
                                             </TableRow>
                                         );

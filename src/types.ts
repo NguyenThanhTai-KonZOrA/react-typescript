@@ -71,6 +71,7 @@ export type TeamRepresentativesRequest = {
   TeamRepresentativeId: string;
   ProgramName: string;
   Month: string;
+  Status: string;
 }
 
 export type TeamRepresentativesResponse = {
@@ -85,9 +86,13 @@ export type TeamRepresentativesResponse = {
   awardTotal: number;
   status: string;
   isPayment: boolean;
+  isPrintf: boolean;
+  paymentDate: string;
+  paymentBy: string;
 }
 
 export type PaymentTeamRepresentativesRequest = {
+  PaymentTeamRepresentativesId: string;
   TeamRepresentativeName: string;
   TeamRepresentativeId: string;
   Month: string;

@@ -13,7 +13,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
 
-  // 👇 Lấy token từ localStorage khi app load
+  // Get token from localStorage when app load
   useEffect(() => {
     const savedToken = localStorage.getItem("token");
     const savedUser = localStorage.getItem("user");
@@ -24,14 +24,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // 👇 Global logout detection
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
-      // Khi token bị remove từ tab khác
+      // when token is removed from another tab
       if (e.key === 'token' && e.newValue === null) {
         console.log('🚪 Token removed from another tab, clearing local state...');
         setUser(null);
         setToken(null);
       }
-      
-      // Khi có logout event từ tab khác
+
+      // when logout event is received from another tab
       if (e.key === 'logout-event') {
         console.log('🚪 Logout event received from another tab');
         setUser(null);
@@ -59,8 +59,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setToken(null);
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    
-    // 👇 Trigger global logout event cho các tabs khác
+
+    // Trigger global logout event for other tabs
     localStorage.setItem('logout-event', Date.now().toString());
   };
 

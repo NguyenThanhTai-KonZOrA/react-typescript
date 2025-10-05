@@ -5,7 +5,7 @@ import {
     Stack,
     useTheme
 } from "@mui/material";
-import { Copyright, Business, Email, Phone } from "@mui/icons-material";
+import { Copyright } from "@mui/icons-material";
 
 export default function Footer() {
     const theme = useTheme();

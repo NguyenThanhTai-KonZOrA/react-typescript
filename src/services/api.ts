@@ -164,7 +164,7 @@ export async function downloadCrpReport(request: GenerateCrpReportRequest): Prom
 
   const cd = res.headers.get("content-disposition") || "";
   const match = /filename\*?=(?:UTF-8''|")?([^\";]+)/i.exec(cd);
-  const serverFileName = match ? decodeURIComponent(match[1].replace(/"/g, "")) : "crpReport.xlsx";
+  const serverFileName = match ? decodeURIComponent(match[1].replace(/"/g, "")) : `CRP_Settlement_${request.TeamRepresentativeId}.xlsx`;
 
   const url = window.URL.createObjectURL(blob);
   const a = document.createElement("a");

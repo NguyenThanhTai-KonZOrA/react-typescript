@@ -2,22 +2,22 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 /**
- * Hook để detect logout từ tab khác và redirect về login page
- * Sử dụng localStorage events để sync giữa các tabs
+ * Hook is detect logout from another tab and redirect to login page
+ * Use localStorage events to sync between tabs
  */
 export const useGlobalLogout = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Function để check khi localStorage thay đổi
+    // Function check storage changes
     const handleStorageChange = (e: StorageEvent) => {
-      // Nếu token bị remove từ tab khác
+      // when token is removed from another tab
       if (e.key === 'token' && e.newValue === null) {
         console.log('🚪 Detected logout from another tab, redirecting to login...');
         navigate('/login');
       }
-      
-      // Hoặc nếu có event logout custom
+
+      // or if a custom logout event is received
       if (e.key === 'logout-event') {
         console.log('🚪 Received logout event from another tab');
         localStorage.removeItem('logout-event'); // Clean up
@@ -25,7 +25,7 @@ export const useGlobalLogout = () => {
       }
     };
 
-    // Lắng nghe storage events (chỉ trigger khi change từ tab khác)
+    // listen for storage events (only trigger when change from another tab)
     window.addEventListener('storage', handleStorageChange);
 
     // Cleanup function
@@ -34,13 +34,13 @@ export const useGlobalLogout = () => {
     };
   }, [navigate]);
 
-  // Function để trigger logout cho tất cả tabs
+  // Function to trigger logout for all tabs
   const triggerGlobalLogout = () => {
     // Remove tokens
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    
-    // Trigger event cho các tabs khác
+
+    // Trigger event for other tabs
     localStorage.setItem('logout-event', Date.now().toString());
     
     // Navigate current tab

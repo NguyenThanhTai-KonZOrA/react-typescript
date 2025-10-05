@@ -1,4 +1,3 @@
-import React from "react";
 import {
     AppBar,
     Toolbar,
@@ -7,7 +6,6 @@ import {
     Box
 } from "@mui/material";
 import { ImportExport, Logout, TableChart, Groups } from "@mui/icons-material";
-import EqualizerIcon from '@mui/icons-material/Equalizer';
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
@@ -58,7 +56,7 @@ export default function Header() {
                         </Button>
                     )}
                     
-                    {location.pathname !== "/settlement-statement" && (
+                    {/* {location.pathname !== "/settlement-statement" && (
                         <Button
                             color="inherit"
                             startIcon={<EqualizerIcon />}
@@ -67,7 +65,7 @@ export default function Header() {
                         >
                             Settlement Statement
                         </Button>
-                    )}
+                    )} */}
                     
                     {location.pathname !== "/team-representatives" && (
                         <Button
