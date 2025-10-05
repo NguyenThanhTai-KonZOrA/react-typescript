@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 interface AuthContextType {
   user: string | null;
   token: string | null;
+  role: string | null;
   login: (user: string, token: string) => void;
   logout: () => void;
 }
@@ -12,13 +13,16 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [role, setRole] = useState<string | null>(null);
 
   // Get token from localStorage when app load
   useEffect(() => {
     const savedToken = localStorage.getItem("token");
     const savedUser = localStorage.getItem("user");
+    const savedRole = localStorage.getItem("userRole");
     if (savedToken) setToken(savedToken);
     if (savedUser) setUser(savedUser);
+    if (savedRole) setRole(savedRole);
   }, []);
 
   // 👇 Global logout detection
@@ -29,6 +33,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.log('🚪 Token removed from another tab, clearing local state...');
         setUser(null);
         setToken(null);
+        setRole(null);
       }
 
       // when logout event is received from another tab
@@ -36,12 +41,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.log('🚪 Logout event received from another tab');
         setUser(null);
         setToken(null);
+        setRole(null);
         // Clean up the event (no need to remove here, it will auto-expire)
       }
     };
 
     window.addEventListener('storage', handleStorageChange);
-    
+
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
@@ -50,19 +56,42 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = (user: string, token: string) => {
     setUser(user);
     setToken(token);
+    debugger;
+    const payload = parseJwt(token);
+    const role = payload?.["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+    console.log("Role:", role);
     localStorage.setItem("token", token);
     localStorage.setItem("user", user);
+    localStorage.setItem("userRole", role);
   };
 
   const logout = () => {
     setUser(null);
     setToken(null);
+    setRole(null);
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    localStorage.removeItem("userRole");
 
     // Trigger global logout event for other tabs
     localStorage.setItem('logout-event', Date.now().toString());
   };
+
+  function parseJwt(token: string): any {
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+      return JSON.parse(jsonPayload);
+    } catch {
+      return null;
+    }
+  }
 
   return (
     <AuthContext.Provider value={{ user, token, login, logout }}>

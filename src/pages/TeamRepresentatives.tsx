@@ -37,6 +37,7 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import { getTeamRepresentatives, paymentTeamRepresentatives, downloadCrpReport, unPaidTeamRepresentatives } from "../services/api";
 import { TeamRepresentativesRequest, TeamRepresentativesResponse, PaymentTeamRepresentativesRequest, GenerateCrpReportRequest, UnPaidTeamRepresentativesResponse, UnPaidTeamRepresentativesRequest } from "../types";
 import { Layout } from "../components/layout";
+import { useIsAdmin } from "../hooks/useIsAdmin";
 
 export default function TeamRepresentativesPage() {
     // Set default filter values
@@ -61,6 +62,7 @@ export default function TeamRepresentativesPage() {
 
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+    const isAdmin = useIsAdmin();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFilters({ ...filters, [e.target.name]: e.target.value });
@@ -651,7 +653,7 @@ export default function TeamRepresentativesPage() {
                                                 <TableCell align="center">{formatMonth(row.month)}</TableCell>
                                                 <TableCell align="center">{row.settlementDoc}</TableCell>
                                                 <TableCell align="center">
-                                                    <Typography variant="body2" sx={{ fontWeight: 600, color: 'success.main' }}>
+                                                    <Typography variant="body2" component="div" sx={{ fontWeight: 600, color: 'success.main' }}>
                                                         <Typography
                                                             variant="body2"
                                                             sx={{
@@ -691,91 +693,95 @@ export default function TeamRepresentativesPage() {
                                                 <TableCell align="center">{row.isPayment ? row.paymentBy : "-"}</TableCell>
                                                 <TableCell align="center">{formatDate(row.paymentDate)}</TableCell>
                                                 <TableCell align="center">
-                                                    <Tooltip title={row.isPayment ? "Paid" : "Mark as paid"}>
-                                                        <span>
-                                                            <IconButton
-                                                                color={row.isPayment ? "success" : "primary"}
-                                                                onClick={() => handlePayment(row)}
-                                                                disabled={row.isPayment || isPaymentLoading || loading}
-                                                                sx={{
-                                                                    '&:hover': {
-                                                                        bgcolor: row.isPayment ? 'success.50' : 'primary.50'
-                                                                    }
-                                                                }}
-                                                            >
-                                                                {isPaymentLoading ? (
-                                                                    <CircularProgress size={20} />
-                                                                ) : row.isPayment ? (
-                                                                    <CheckCircle />
-                                                                ) : (
-                                                                    <PaymentIcon />
-                                                                )}
-                                                            </IconButton>
-                                                        </span>
-                                                    </Tooltip>
-                                                    <Tooltip title="UnPaid">
-                                                        <span>
-                                                            <IconButton
-                                                                color="primary"
-                                                                onClick={() => handleUnPaid({ paymentTeamRepresentativesId: row.paymentTeamRepresentativesId, isUnPaid: false })}
-                                                                disabled={!row.isPayment || isUnPaidLoading || loading}
-                                                                sx={{
-                                                                    '&:hover': {
-                                                                        bgcolor: 'primary.50'
-                                                                    }
-                                                                }}
-                                                            >
-                                                                {isUnPaidLoading ? (
-                                                                    <CircularProgress size={20} />
-                                                                ) : (
-                                                                    <RestoreIcon />
-                                                                )}
-                                                            </IconButton>
-                                                        </span>
-                                                    </Tooltip>
-                                                    {!row.isPrintf && (
-                                                        <Tooltip title="Download">
-                                                            <span>
-                                                                <IconButton
-                                                                    color="primary"
-                                                                    onClick={() => handleDownload(row)}
-                                                                    disabled={isDownloadLoading || loading || !row.isPayment}
-                                                                    sx={{
-                                                                        '&:hover': {
-                                                                            bgcolor: 'primary.50'
-                                                                        }
-                                                                    }}
-                                                                >
-                                                                    {isDownloadLoading ? (
-                                                                        <CircularProgress size={20} />
-                                                                    ) : (
-                                                                        <FileDownload />
-                                                                    )}
-                                                                </IconButton>
-                                                            </span>
-                                                        </Tooltip>
-                                                    )}
-                                                    {row.isPrintf && (
-                                                        <Tooltip title="Reprint">
-                                                            <span>
-                                                                <IconButton
-                                                                    color="primary"
-                                                                    onClick={() => handleDownload(row)}
-                                                                    disabled={isDownloadLoading || loading}
-                                                                    sx={{
-                                                                        '&:hover': {
-                                                                            bgcolor: 'primary.50'
-                                                                        }
-                                                                    }}
-                                                                >
-                                                                    {isDownloadLoading ? (
-                                                                        <CircularProgress size={20} />
-                                                                    ) : (
-                                                                        <PrintIcon />
-                                                                    )}
-                                                                </IconButton>
-                                                            </span>
-                                                        </Tooltip>
+                                                    {isAdmin && (
+                                                        <>
+                                                            <Tooltip title={row.isPayment ? "Paid" : "Mark as paid"}>
+                                                                <span>
+                                                                    <IconButton
+                                                                        color={row.isPayment ? "success" : "primary"}
+                                                                        onClick={() => handlePayment(row)}
+                                                                        disabled={row.isPayment || isPaymentLoading || loading}
+                                                                        sx={{
+                                                                            '&:hover': {
+                                                                                bgcolor: row.isPayment ? 'success.50' : 'primary.50'
+                                                                            }
+                                                                        }}
+                                                                    >
+                                                                        {isPaymentLoading ? (
+                                                                            <CircularProgress size={20} />
+                                                                        ) : row.isPayment ? (
+                                                                            <CheckCircle />
+                                                                        ) : (
+                                                                            <PaymentIcon />
+                                                                        )}
+                                                                    </IconButton>
+                                                                </span>
+                                                            </Tooltip>
+                                                            <Tooltip title="UnPaid">
+                                                                <span>
+                                                                    <IconButton
+                                                                        color="primary"
+                                                                        onClick={() => handleUnPaid({ paymentTeamRepresentativesId: row.paymentTeamRepresentativesId, isUnPaid: false })}
+                                                                        disabled={!row.isPayment || isUnPaidLoading || loading}
+                                                                        sx={{
+                                                                            '&:hover': {
+                                                                                bgcolor: 'primary.50'
+                                                                            }
+                                                                        }}
+                                                                    >
+                                                                        {isUnPaidLoading ? (
+                                                                            <CircularProgress size={20} />
+                                                                        ) : (
+                                                                            <RestoreIcon />
+                                                                        )}
+                                                                    </IconButton>
+                                                                </span>
+                                                            </Tooltip>
+                                                            {!row.isPrintf && (
+                                                                <Tooltip title="Download">
+                                                                    <span>
+                                                                        <IconButton
+                                                                            color="primary"
+                                                                            onClick={() => handleDownload(row)}
+                                                                            disabled={isDownloadLoading || loading || !row.isPayment}
+                                                                            sx={{
+                                                                                '&:hover': {
+                                                                                    bgcolor: 'primary.50'
+                                                                                }
+                                                                            }}
+                                                                        >
+                                                                            {isDownloadLoading ? (
+                                                                                <CircularProgress size={20} />
+                                                                            ) : (
+                                                                                <FileDownload />
+                                                                            )}
+                                                                        </IconButton>
+                                                                    </span>
+                                                                </Tooltip>
+                                                            )}
+                                                            {row.isPrintf && (
+                                                                <Tooltip title="Reprint">
+                                                                    <span>
+                                                                        <IconButton
+                                                                            color="primary"
+                                                                            onClick={() => handleDownload(row)}
+                                                                            disabled={isDownloadLoading || loading}
+                                                                            sx={{
+                                                                                '&:hover': {
+                                                                                    bgcolor: 'primary.50'
+                                                                                }
+                                                                            }}
+                                                                        >
+                                                                            {isDownloadLoading ? (
+                                                                                <CircularProgress size={20} />
+                                                                            ) : (
+                                                                                <PrintIcon />
+                                                                            )}
+                                                                        </IconButton>
+                                                                    </span>
+                                                                </Tooltip>
+                                                            )}
+                                                        </>
                                                     )}
                                                 </TableCell>
                                             </TableRow>
